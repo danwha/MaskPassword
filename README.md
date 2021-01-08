@@ -23,6 +23,15 @@
 3. User can change the order.
 4. If necessary, additional encryption can be added.
 
+## example
+1. fixed string : danwha
+2. Month name associated with the month
+3. fixed string : -
+4. Current hour
+
+If today is January 8, 2021 at 22:00, the correct password is danwhaJAN-22.
+If today is August 18, 2021 09:00, the correct password is danwhaAUG-09.
+
 ## usage
 1. SIMPLE!
 
