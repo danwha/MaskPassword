@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="modalRule.css"/>
+<script language="javascript" src="modalRule.js"></script>
+
+<div id="modalRule" title="Order of rules">
+  <div style="text-align: center; margin: 8px; border-bottom: 1px dotted gray;">
+    <label id="currentUTC"></label><br>
+    LOCAL : <label id="currentLocal"></label>
+  </div>
+  <div class="container">
+    <label>FIXED SENTENCE</label>
+    <label>FULL<br>YEAR</label>
+    <label>SHORT<br>YEAR</label>
+    <label>MONTH<br>NAMED</label>
+    <label>MONTH<br>NUMERIC</label>
+    <label>WEEK<br>NAMED</label>
+    <label>DATE</label>
+    <label>HOUR</label>
+    <fieldset id='fixString' draggable="true" class="boxSrc" data-type="s" data-value="">    
+      <input id="FixedSentence" onkeyup="checkChars(this)" onfocus="clearChars(this)" value="">
+    </fieldset>
+    <fieldset id='fYear' draggable="true" class="boxSrc" data-type="Y" data-value=""></fieldset>
+    <fieldset id='sYear' draggable="true" class="boxSrc" data-type="y" data-value=""></fieldset>
+    <fieldset id='lMonth' draggable="true" class="boxSrc" data-type="M" data-value=""></fieldset>
+    <fieldset id='sMonth' draggable="true" class="boxSrc" data-type="m" data-value=""></fieldset>
+    <fieldset id='weekday' draggable="true" class="boxSrc" data-type="w" data-value=""></fieldset>
+    <fieldset id='date' draggable="true" class="boxSrc" data-type="d" data-value=""></fieldset>
+    <fieldset id='lHour' draggable="true" class="boxSrc" data-type="h" data-value=""></fieldset>
+  </div>
+  <div style="text-align: center; margin: 8px;">
+    <label style="color: red;">⬇︎⬇︎⬇️</label>
+    <label>Drag and drop below to arrange.</label>
+    <label style="color: red;">⬇︎⬇︎⬇️</label>
+  </div>
+  <div id="containerDrop">
+    <div id="rules"></div>
+  </div>
+  <br>
+  <div style="text-align: center; margin-bottom: 18px;">
+    <button id='ruleYes'><span style='font-size:14px'>✔︎</span> Ok, I will do this.</button>
+    <button id='ruleNo'><span style='font-size:14px'>✘</span> No, I won't.</button>
+  </div>
+</div>

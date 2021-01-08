@@ -57,6 +57,5 @@ console.log('PASSWORD 2', password2, compare2.match)
 let str = Mask.json2str(ValidStatement)
 console.log('Rule string', str)
 
-console.log('----------')
 let json = Mask.str2json(str)
 console.log('Rule JSON', json)
