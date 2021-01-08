@@ -30,6 +30,7 @@
 4. Current hour
 
 If today is January 8, 2021 at 22:00, the correct password is danwhaJAN-22.
+
 If today is August 18, 2021 09:00, the correct password is danwhaAUG-09.
 
 ## usage
