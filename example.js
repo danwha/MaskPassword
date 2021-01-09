@@ -17,14 +17,14 @@ const bodyParser  = require('body-parser')
 /** @requires maskPassword */
 const Mask        = require('./maskPassword')
 
-app.use(express.json()); // need how use
-app.use(express.static(__dirname)); // current directory
-app.use(express.urlencoded({ extended: true })); // with post data receive
+app.use(express.json());
+app.use(express.static(__dirname));
+app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set('views',[__dirname,])
-app.set('view engine', 'ejs'); // html template engine via jade
+app.set('view engine', 'ejs');
 app.engine('html', ejs.renderFile);
 
 app.listen(
