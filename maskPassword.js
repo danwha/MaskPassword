@@ -5,7 +5,6 @@
  * @version 20210107
  * @since 2020
  * @copyright danwha
- * @license GPLv2
  * @language node.js
  */
 
