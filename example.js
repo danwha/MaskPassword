@@ -8,13 +8,13 @@
  * @language node.js
  */
 
-/** @require express, ejs, body-parser */
+/** @requires express, ejs, body-parser */
 const express     = require('express')
 const app         = express()
 const ejs         = require('ejs')
 const bodyParser  = require('body-parser')
 
-/** @requires maskPassword */
+/** @require maskPassword */
 const Mask        = require('./maskPassword')
 
 app.use(express.json());
