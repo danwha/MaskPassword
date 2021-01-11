@@ -2,9 +2,10 @@
  * test code
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210107
+ * @version 20210111
  * @since 2020
  * @copyright danwha
+ * @license GPLv2
  * @language node.js
  */
 
@@ -56,5 +57,12 @@ console.log('PASSWORD 2', password2, compare2.match)
 let str = Mask.json2str(ValidStatement)
 console.log('Rule string', str)
 
-let json = Mask.str2json(str)
+let encrypt = Mask.encrypt(str)
+console.log('Rule encrypt', encrypt)
+
+let decrypt = Mask.decrypt(encrypt)
+console.log('Rule decrypt', decrypt)
+
+let json = Mask.str2json(decrypt)
 console.log('Rule JSON', json)
+

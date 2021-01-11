@@ -2,14 +2,31 @@
  * @module MaskPassword
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210107
+ * @version 20210111
  * @since 2020
  * @copyright danwha
+ * @license GPLv2
  * @language node.js
  */
 
+ /**
+  * @requires crypto
+  */
+const crypto = require('crypto');
+
+/**
+ * I thought people would put the crypt on their own.
+ * But I was surprised that some people do not.
+ * 
+ * @constant
+ * @thanks https://attacomsian.com/blog/nodejs-encrypt-decrypt-data
+ */
+const algorithm = 'aes-256-ctr';
+const secretKey = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3';
+const iv = crypto.randomBytes(16);
+
  /** 
-  * @const
+  * @constant
   * @type {JSON}
   * @default
   */
@@ -21,9 +38,10 @@ const ruleStruct = {
   typeWeek  : { "type":"w", "length":3, "format":"s"},
   typeDate  : { "type":"d", "length":2, "format":"n"},
   typeHour  : { "type":"h", "length":2, "format":"n"},
-  typeFix   : { "type":"s", "length":0, "format":""}, // 금칙어는?
+  typeMinute: { "type":"I", "length":2, "format":"n"},
+  typeFix   : { "type":"s", "length":0, "format":""},
 
-  codeDates : ['Y','y','M','m', 'w', 'd', 'h'],
+  codeDates : ['Y','y','M','m', 'w', 'd', 'h', 'I'],
   codeStrings : ['s'],
 
   shortMonths : ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
@@ -86,6 +104,14 @@ module.exports = {
    * @example         { type: 'h', length: 2, format: 'n' }
    */
   pushHour    : rule => {rule.push(ruleStruct.typeHour)},
+
+  /**
+   * @description     minute
+   * @mean            minute, aka 48
+   * @param {JSON[]}  rule 
+   * @example         { type: 'I', length: 2, format: 'n' }
+   */
+  pushMinute  : rule => {rule.push(ruleStruct.typeMinute)},
 
   /**
    * @description     string
@@ -167,8 +193,33 @@ module.exports = {
     } // while
 
     return json
+  },
+
+  /**
+   * @description encrypt
+   * @param {string} text
+   * @returns {JSON}
+   */
+  encrypt : text => {
+    const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
+    const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
+    return {
+      iv: iv.toString('hex'),
+      content: encrypted.toString('hex')
+    }
+  },
+
+  /**
+   * @description decrypt
+   * @param {JSON} hash
+   * @returns {string}
+   */
+  decrypt : hash => {
+    const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.iv, 'hex'))
+    const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()])
+    return decrpyted.toString()
   }
-}
+} // exports
 
 /**
  * @description   rule syntax check
@@ -239,6 +290,7 @@ module.exports.compareRule = (rule, source) => {
     week    : ruleStruct.shortWeeks[day.getUTCDay()].toUpperCase(),
     date    : makeZeroString(day.getUTCDate()),
     hour    : makeZeroString(day.getUTCHours()),
+    minute  : makeZeroString(day.getUTCMinutes()),
   }
 
   var index = 0
@@ -249,59 +301,36 @@ module.exports.compareRule = (rule, source) => {
       source  : '',
       goal    : '',
     }
-    switch(item.type){
-      case 'Y':
-        $item.source = source.substr(index,4)
-        $item.goal = now.year4*1
-        index += 4
-        $item.match = ($item.goal == $item.source*1)
-        break
-      case 'y':
-        $item.source = source.substr(index,2)
-        $item.goal = now.year2*1
-        index += 2
-        $item.match = ($item.goal == $item.source*1)
-        break
-      case 'M':
-        $item.source = source.substr(index,3)
-        $item.goal = now.month3
-        index += 3
-        $item.match = ($item.goal == $item.source.toUpperCase())
-        break
-      case 'm':
-        $item.source = source.substr(index,2)
-        $item.goal = now.month2
-        index += 2
-        $item.match = ($item.goal == $item.source)
-        break
-      case 'w':
-        $item.source = source.substr(index,3)
-        $item.goal = now.week
-        index += 3
-        $item.match = ($item.goal == $item.source.toUpperCase())
-        break
-      case 'd':
-        $item.source = source.substr(index,2)
-        $item.goal = now.date
-        index += 2
-        $item.match = ($item.goal == $item.source)
-        break
-      case 'h':
-        $item.source = source.substr(index,2)
-        $item.goal = now.hour
-        index += 2
-        $item.match = ($item.goal == $item.source)
-        break
-      case 's':
-        let length = item.length
-        $item.source = source.substr(index,length)
-        $item.goal = item.format
-        $item.match = (item.format == $item.source)
-        index += length
-        break
-    } // switch
+
+    if(ruleStruct.codeDates.includes(item.type)){
+      $item.source = source.substr(index,item.length)
+
+      switch(item.type){ /* ['Y','y','M','m', 'w', 'd', 'h', 'I'] */
+        case 'Y': $item.goal = now.year4*1;   break
+        case 'y': $item.goal = now.year2*1;   break
+        case 'M': $item.goal = now.month3;    break
+        case 'm': $item.goal = now.month2*1;  break
+        case 'w': $item.goal = now.week;      break
+        case 'd': $item.goal = now.date*1;    break
+        case 'h': $item.goal = now.hour*1;    break
+        case 'I': $item.goal = now.minute*1;  break
+      }
+
+      ['M','w'].includes(item.type)
+        ? $item.match = ($item.goal == $item.source.toUpperCase())
+        : $item.match = ($item.goal == $item.source*1)
+
+      index += item.length
+    }else if(item.type == 's'){
+      let length = item.length
+      $item.source = source.substr(index,length)
+      $item.goal = item.format
+      $item.match = (item.format == $item.source)
+      index += length
+    } // if
+
     $rule.push($item)
-  })
+  }) // forEach
 
   let goals = []
   $rule.forEach(item => goals.push(item.goal))
