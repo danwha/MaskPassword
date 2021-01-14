@@ -1,6 +1,10 @@
 
 # Masked Password
 
+## added 20210115
+  1. There were complaints that it was not encrypted. Encrypted.
+  2. There was a complaint that the server administrator could know the password rules. I've tried.
+
 ## why - Many services require the following:
   1. Don't use passwords that are easy to remember.
   2. The length of the password is increasing.
@@ -37,5 +41,5 @@
   1. SIMPLE!
 
 ## If this has helped
-  ### you can add the chicken price with Ethereum.
+  ### I think I can do better if I eat chicken.
   ETH Wallet : 0x03AA0D76BE8f547244c5A7410674f400142305b0

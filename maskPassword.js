@@ -2,7 +2,7 @@
  * @module MaskPassword
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210111
+ * @version 20210115
  * @since 2020
  * @copyright danwha
  * @language node.js
@@ -13,18 +13,7 @@
   */
 const crypto = require('crypto');
 
-/**
- * I thought people would put the crypt on their own.
- * But I was surprised that some people do not.
- * 
- * @constant
- * @thanks https://attacomsian.com/blog/nodejs-encrypt-decrypt-data
- */
-const algorithm = 'aes-256-ctr';
-const secretKey = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3';
-const iv = crypto.randomBytes(16);
-
- /** 
+/** 
   * @constant
   * @type {JSON}
   * @default
@@ -185,8 +174,8 @@ module.exports = {
           fix.length = l*1
           json.push(fix)
           break
-        default:
-          console.log('fail', index, code)
+        default: // fail
+          return []
           break;
       } // switch
     } // while
@@ -194,30 +183,84 @@ module.exports = {
     return json
   },
 
-  /**
-   * @description encrypt
-   * @param {string} text
-   * @returns {JSON}
-   */
-  encrypt : text => {
-    const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
-    const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
-    return {
-      iv: iv.toString('hex'),
-      content: encrypted.toString('hex')
-    }
-  },
 
   /**
-   * @description decrypt
-   * @param {JSON} hash
-   * @returns {string}
+   * @description encryption
+   * @param       {JSON[]}  rule
+   * @returns     {JSON[]}
    */
-  decrypt : hash => {
-    const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.iv, 'hex'))
-    const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()])
-    return decrpyted.toString()
+  encryption : rule =>{
+    let result = {}
+
+    let temp = {
+      string      : [],
+      struct      : [],
+      stringJoins : '',
+      rules       : [],
+      rulesJoins  : '',
+      secreatKey  : '',
+    }
+    rule.forEach(item => {
+      if(ruleStruct.codeDates.includes(item.type)){
+        temp.struct.push(`n${item.length}`)
+        temp.rules.push(item.type)
+      }else{
+        let str = item.format
+        let len = str.length
+        temp.struct.push(`s${len}`)
+        temp.string.push(str)
+        temp.rules.push(`s[${len}:${str}]`)
+      }
+    })
+
+    let buffer = Buffer.from(temp.struct.join(','), 'utf-8')
+    result.struct = buffer.toString('hex') // db 에 저장 -> 
+    temp.stringJoins = temp.string.join('')
+    var stringBase64 = Buffer.from(temp.stringJoins).toString('base64')
+    if(stringBase64.length < 32 ) stringBase64 += '\x00'.repeat(32)
+    let string32Bytes = stringBase64.substr(0,32)
+
+    temp.secreatKey = string32Bytes
+    temp.rulesJoins = temp.rules.join('')
+    let en = encrypt(temp.rulesJoins, temp.secreatKey)
+    result.iv = en.iv
+    result.content = en.content
+
+    return result
+  }, // 
+
+  /**
+   * @description decryption
+   * @param       {JSON[]}  encrypt
+   * @param       {string}  password
+   * @returns     {string}
+   */
+  decryption : (encrypt, password) => {
+    let structString = Buffer.from(encrypt.struct, 'hex').toString('utf-8')
+    let struct = structString.split(',')
+
+    // get fixed string
+    var index = 0
+    let fixed = []
+    struct.forEach(item => {
+      let key = item.substr(0,1)
+      let len = item.substr(1) * 1
+      let str = password.substr(index,len)
+      if(key == 's'){
+        fixed.push(str)
+      }
+      index += len
+    })
+    let fixedString = fixed.join('')
+
+    // make secreat key
+    var stringBase64 = Buffer.from(fixedString).toString('base64')
+    if(stringBase64.length < 32 ) stringBase64 += '\x00'.repeat(32)
+    let secreatKey = stringBase64.substr(0,32)
+    // decrypt
+    return decrypt(encrypt, secreatKey)
   }
+
 } // exports
 
 /**
@@ -305,14 +348,14 @@ module.exports.compareRule = (rule, source) => {
       $item.source = source.substr(index,item.length)
 
       switch(item.type){ /* ['Y','y','M','m', 'w', 'd', 'h', 'I'] */
-        case 'Y': $item.goal = now.year4*1;   break
-        case 'y': $item.goal = now.year2*1;   break
-        case 'M': $item.goal = now.month3;    break
-        case 'm': $item.goal = now.month2*1;  break
-        case 'w': $item.goal = now.week;      break
-        case 'd': $item.goal = now.date*1;    break
-        case 'h': $item.goal = now.hour*1;    break
-        case 'I': $item.goal = now.minute*1;  break
+        case 'Y': $item.goal = now.year4;   break
+        case 'y': $item.goal = now.year2;   break
+        case 'M': $item.goal = now.month3;  break
+        case 'm': $item.goal = now.month2;  break
+        case 'w': $item.goal = now.week;    break
+        case 'd': $item.goal = now.date;    break
+        case 'h': $item.goal = now.hour;    break
+        case 'I': $item.goal = now.minute;  break
       }
 
       ['M','w'].includes(item.type)
@@ -337,3 +380,39 @@ module.exports.compareRule = (rule, source) => {
   let match = source == goalsJoined
   return {verify:rule, match:match, goal:goalsJoined}
 } // compareRule
+
+
+/**
+ * @constant
+ * @thanks https://attacomsian.com/blog/nodejs-encrypt-decrypt-data
+ */
+
+ // aes-128-ctr, aes-192-ctr, aes-256-ctr
+ const algorithm = 'aes-256-ctr';
+ const SecretKey = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3'; // 32 bytes : 256 bits
+ const iv = crypto.randomBytes(16);
+ 
+/**
+ * @description encrypt
+ * @param {string} text
+ * @returns {JSON}
+ */
+encrypt = (text, secretKey = SecretKey) => {
+  const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
+  const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
+  return {
+    iv: iv.toString('hex'),
+    content: encrypted.toString('hex')
+  }
+},
+
+/**
+ * @description decrypt
+ * @param {JSON} hash
+ * @returns {string}
+ */
+decrypt = (hash, secretKey = SecretKey) => {
+  const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.iv, 'hex'))
+  const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()])
+  return decrpyted.toString()
+}

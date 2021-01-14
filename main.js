@@ -8,6 +8,8 @@
  * @language node.js
  */
 
+require('./utilities')
+
  /**
   * @requires maskPassword.js
   */
@@ -26,9 +28,9 @@ let ValidStatement = []
 let InvalidStatement = []
 
 Mask.pushMonth2(ValidStatement)
-Mask.pushFix(ValidStatement, 'danwha')
+Mask.pushFix(ValidStatement, 'Talking to the moon.')
 Mask.pushDate(ValidStatement)
-Mask.pushFix(ValidStatement, '자하')
+Mask.pushFix(ValidStatement, 'Walking on the roof.')
 Mask.pushHour(ValidStatement)
 console.log('ValidStatement syntax', ValidStatement)
 
@@ -42,26 +44,31 @@ console.log('Valid', Mask.validRule(ValidStatement))
 console.log('Invalid', Mask.validRule(InvalidStatement))
 
 let password0 = ''
-let compare0 = Mask.compareRule(ValidStatement, password0)
-console.log('PASSWORD 0', password0, compare0.match)
-
 let password1 = '01Legna07자하15'
-let compare1 = Mask.compareRule(ValidStatement, password1)
-console.log('PASSWORD 1', password1, compare1.match)
+let password2 = '01Talking to the moon.15Walking on the roof.00'
 
-let password2 =  compare0.goal
-let compare2 = Mask.compareRule(ValidStatement, password2)
-console.log('PASSWORD 2', password2, compare2.match)
+let ruleEncrypt = Mask.encryption(ValidStatement)
+console.log('Rule encrypt', ruleEncrypt)
 
-let str = Mask.json2str(ValidStatement)
-console.log('Rule string', str)
+let storage = ruleEncrypt
 
-let encrypt = Mask.encrypt(str)
-console.log('Rule encrypt', encrypt)
+let ruleStr0 = Mask.decryption(storage, password0)
+let ruleJson0 = Mask.str2json(ruleStr0)
+console.log(__line, ruleJson0.length == 0 ? '❌ access denied' : '❗️ rule success')
 
-let decrypt = Mask.decrypt(encrypt)
-console.log('Rule decrypt', decrypt)
+let ruleStr1 = Mask.decryption(storage, password1)
+let ruleJson1 = Mask.str2json(ruleStr1)
+console.log(__line, ruleJson1.length == 0 ? '❌ access denied' : '❗️ rule success')
 
-let json = Mask.str2json(decrypt)
-console.log('Rule JSON', json)
+let ruleStr2 = Mask.decryption(storage, password2)
+let ruleJson2 = Mask.str2json(ruleStr2)
+console.log(__line, ruleJson2.length == 0 ? '❌ access denied' : '❗️ rule success')
 
+let compare0 = Mask.compareRule(ruleJson2, password0)
+console.log(__line, password0, compare0.match ? '⭕️ access approved' : '❌ access denied')
+
+let compare1 = Mask.compareRule(ruleJson2, password1)
+console.log(__line, password1, compare1.match ? '⭕️ access approved' : '❌ access denied')
+
+let compare2 = Mask.compareRule(ruleJson2, password2)
+console.log(__line, password2, compare2.match ? '⭕️ access approved' : '❌ access denied')
