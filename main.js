@@ -2,7 +2,7 @@
  * test code
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210115
+ * @version 20210116
  * @since 2020
  * @copyright danwha
  * @language node.js
@@ -13,62 +13,53 @@ require('./utilities')
  /**
   * @requires maskPassword.js
   */
- const Mask = require('./maskPassword')
+ const MaskPassword = require('./maskPassword')
 
-/**
- * @type    {JSON[]}
- * @default []
- */
-let ValidStatement = []
+let ValidMask = new MaskPassword()
+ValidMask.pushMonth2()
+ValidMask.pushFix('Talking to the moon.')
+ValidMask.pushDate()
+ValidMask.pushFix('Walking on the roof.')
+ValidMask.pushHour()
+console.log('ValidStatement syntax', ValidMask)
 
-/**
- * @type    {JSON[]}
- * @default []
- */
-let InvalidStatement = []
-
-Mask.pushMonth2(ValidStatement)
-Mask.pushFix(ValidStatement, 'Talking to the moon.')
-Mask.pushDate(ValidStatement)
-Mask.pushFix(ValidStatement, 'Walking on the roof.')
-Mask.pushHour(ValidStatement)
-console.log('ValidStatement syntax', ValidStatement)
-
-Mask.pushMonth2(InvalidStatement)
-Mask.pushDate(InvalidStatement)
-Mask.pushHour(InvalidStatement)
-console.log('InvalidStatement syntax', InvalidStatement)
+let InvalidMask = new MaskPassword()
+InvalidMask.pushMonth2()
+InvalidMask.pushDate()
+InvalidMask.pushHour()
+console.log('InvalidStatement syntax', InvalidMask)
 
 
-console.log('Valid', Mask.validRule(ValidStatement))
-console.log('Invalid', Mask.validRule(InvalidStatement))
+console.log('Valid', ValidMask.isValid())
+console.log('Invalid', InvalidMask.isValid())
 
-let password0 = ''
-let password1 = '01Legna07자하15'
-let password2 = '01Talking to the moon.15Walking on the roof.00'
 
-let ruleEncrypt = Mask.encryption(ValidStatement)
+let ruleEncrypt = ValidMask.encryption()
 console.log('Rule encrypt', ruleEncrypt)
 
 let storage = ruleEncrypt
 
-let ruleStr0 = Mask.decryption(storage, password0)
-let ruleJson0 = Mask.str2json(ruleStr0)
-console.log(__line, ruleJson0.length == 0 ? '❌ access denied' : '❗️ rule success')
+let ruleStr0 = ValidMask.decryption(storage, '')
+let ruleStr1 = ValidMask.decryption(storage, '01Legna07자하15')
 
-let ruleStr1 = Mask.decryption(storage, password1)
-let ruleJson1 = Mask.str2json(ruleStr1)
-console.log(__line, ruleJson1.length == 0 ? '❌ access denied' : '❗️ rule success')
+const dayUTC = new Date();
+const dayUTCUnixtime = dayUTC.getTime() / 1000
+const dayKrUnixtime = dayUTCUnixtime + 9 * 60 * 60 // to locale korea
+const day = new Date(dayKrUnixtime * 1000)
+const makeZeroString = value => {
+  let s = '0' + value.toString();
+  return s.substr(s.length - 2, 2);
+}
 
-let ruleStr2 = Mask.decryption(storage, password2)
-let ruleJson2 = Mask.str2json(ruleStr2)
-console.log(__line, ruleJson2.length == 0 ? '❌ access denied' : '❗️ rule success')
-
-let compare0 = Mask.compareRule(ruleJson2, password0)
-console.log(__line, password0, compare0.match ? '⭕️ access approved' : '❌ access denied')
-
-let compare1 = Mask.compareRule(ruleJson2, password1)
-console.log(__line, password1, compare1.match ? '⭕️ access approved' : '❌ access denied')
-
-let compare2 = Mask.compareRule(ruleJson2, password2)
-console.log(__line, password2, compare2.match ? '⭕️ access approved' : '❌ access denied')
+let validPasswordStruct = [
+  makeZeroString((day.getUTCMonth() + 1)),
+  'Talking to the moon.',
+  makeZeroString(day.getUTCDate()),
+  'Walking on the roof.',
+  makeZeroString(day.getUTCHours())
+]
+let validPassword = validPasswordStruct.join('')
+let ruleStr2 = ValidMask.decryption(storage, validPassword)
+console.log(__line, ruleStr0)
+console.log(__line, ruleStr1)
+console.log(__line, ruleStr2)
