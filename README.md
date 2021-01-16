@@ -1,6 +1,8 @@
 
 # Masked Password
 
+## convert to class 20210116
+
 ## added 20210115
   1. There were complaints that it was not encrypted. Encrypted.
   2. There was a complaint that the server administrator could know the password rules. I've tried.
