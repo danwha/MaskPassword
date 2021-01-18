@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <link rel="stylesheet" href="master.css"/>
+</head>
+
+<script>
+  var guestRule         = `<%-rule%>`
+</script>
+
+<body>
+  <%-include('modalRule.html')%>
+
+  <fieldset style="padding:0px 8px 8px 8px;">
+    <legend>PASSWORD RULE</legend>
+    <label id="labelRule"></label>
+    <button class="midButton" onclick="createRule()">RULE CREATION</button>
+  </fieldset>
+
+</body>
+</html>
