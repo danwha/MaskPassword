@@ -1,6 +1,7 @@
 
 # Masked Password
 
+## added setRegularExpression(), getRegularExpression 20210118
 ## convert to class 20210116
 
 ## added 20210115

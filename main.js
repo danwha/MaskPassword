@@ -13,7 +13,24 @@ require('./utilities')
  /**
   * @requires maskPassword.js
   */
- const MaskPassword = require('./maskPassword')
+const MaskPassword = require('./maskPassword')
+
+const validRegExp   = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+const invalidRegExp = `/^[가-A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/`
+const setRegExp = reg => {
+  var isValid = true;
+  try {
+    new RegExp(reg)
+  } catch(e) {
+    isValid = false;
+  }
+  if(isValid){
+    let Mask = new MaskPassword()
+    Mask.setRegularExpression(reg)
+  }
+  return isValid
+}
+console.log(__line, setRegExp(validRegExp))
 
 let ValidMask = new MaskPassword()
 ValidMask.pushMonth2()
@@ -21,26 +38,29 @@ ValidMask.pushFix('Talking to the moon.')
 ValidMask.pushDate()
 ValidMask.pushFix('Walking on the roof.')
 ValidMask.pushHour()
-console.log('ValidStatement syntax', ValidMask)
+console.log(__line, 'ValidStatement syntax', ValidMask)
 
 let InvalidMask = new MaskPassword()
 InvalidMask.pushMonth2()
 InvalidMask.pushDate()
 InvalidMask.pushHour()
-console.log('InvalidStatement syntax', InvalidMask)
+console.log(__line, 'InvalidStatement syntax', InvalidMask)
 
+console.log(__line, ValidMask.getRegularExpression())
+console.log(__line, InvalidMask.getRegularExpression())
 
 console.log('Valid', ValidMask.isValid())
 console.log('Invalid', InvalidMask.isValid())
 
-
 let ruleEncrypt = ValidMask.encryption()
-console.log('Rule encrypt', ruleEncrypt)
+console.log(__line, 'Rule encrypt', ruleEncrypt)
 
 let storage = ruleEncrypt
 
 let ruleStr0 = ValidMask.decryption(storage, '')
 let ruleStr1 = ValidMask.decryption(storage, '01Legna07자하15')
+console.log(__line, ruleStr0)
+console.log(__line, ruleStr1)
 
 const dayUTC = new Date();
 const dayUTCUnixtime = dayUTC.getTime() / 1000
@@ -60,6 +80,5 @@ let validPasswordStruct = [
 ]
 let validPassword = validPasswordStruct.join('')
 let ruleStr2 = ValidMask.decryption(storage, validPassword)
-console.log(__line, ruleStr0)
-console.log(__line, ruleStr1)
 console.log(__line, ruleStr2)
+

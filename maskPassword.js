@@ -35,14 +35,28 @@ const ruleStruct = {
   shortMonths : ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   shortWeeks  : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 }
-//const regExp = /^[A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
-const regExp = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+var regExp = /^[A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+//var regExp = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 
 module.exports = class MaskPassword {
   constructor(){
     this.struct = []
     this.structString = ''
   }
+
+  /**
+   * @description     change RegExp(Regular Expression)
+   * @param {RegExp}  reg
+   * @default         /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+   */
+  setRegularExpression(reg){regExp = reg}
+
+  /**
+   * @description   get RegExp(Regular Expression)
+   * @return        {RegExp}
+   * @default       /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+   */
+  getRegularExpression(){return regExp}
 
   /**
    * @description     push items
@@ -95,6 +109,7 @@ module.exports = class MaskPassword {
   isValid(){
     var dateRule = 0
     var fixStrRule = 0
+    var fixStrings = ''
     for(let index = 0 ; index < this.struct.length; index++){
       let item = this.struct[index]
       let type = item.type
@@ -108,9 +123,17 @@ module.exports = class MaskPassword {
             return {result:false, source: item.format, error:'too long'}
           }else if(! regExp.test(item.format)){
             return {result:false, source: item.format, error:'disallowed characters'}
+          }else{
+            fixStrings += item.format
           }
         } // if
       } // if
+    }
+
+    if(fixStrings.length < 6) return {
+      result  : false,
+      source  : '',
+      error   : 'The fixed string is short'
     }
 
     if(dateRule>0 && fixStrRule>0) return {
@@ -174,7 +197,7 @@ module.exports = class MaskPassword {
       }
     })
 
-console.log(__line, temp.struct.join(','))
+    console.log(__line, temp.struct.join(','))
 
     let buffer = Buffer.from(temp.struct.join(','), 'utf-8')
     result.struct = buffer.toString('hex')
