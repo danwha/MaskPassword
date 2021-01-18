@@ -40,6 +40,10 @@
 
   If today is August 18, 2021 09:00, the correct password is danwhaAUG-09.
 
+## install & require
+  1. npm i maskpassword
+  2. const MaskPassword = require('maskpassword')
+
 ## usage
   1. creation
   * 1-1. require        : const MaskPassword = require('./maskPassword')
