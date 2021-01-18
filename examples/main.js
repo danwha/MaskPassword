@@ -2,7 +2,7 @@
  * test code
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210116
+ * @version 20210118
  * @since 2020
  * @copyright danwha
  * @language node.js
@@ -13,8 +13,8 @@ require('./utilities')
  /**
   * @requires maskPassword.js
   */
-//const MaskPassword = require('./maskPassword')
-const MaskPassword = require('maskpassword')
+//const MaskPassword = require('./maskPassword')  // with local package
+const MaskPassword = require('maskpassword')      // installed with npm
 
 const validRegExp   = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 const invalidRegExp = `/^[가-A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/`
