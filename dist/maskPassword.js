@@ -2,8 +2,7 @@
  * @module MaskPassword
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210118
- * @since 2020
+ * @version 20210120
  * @copyright danwha
  * @language node.js
  */
@@ -30,11 +29,12 @@ const ruleStruct = {
   typeFix   : { "type":"s", "length":0, "format":""},
 
   codeDates : ['Y','y','M','m', 'w', 'd', 'h', 'I'],
-  codeStrings : ['s'],
+  codeStrings : 's',
 
   shortMonths : ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   shortWeeks  : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 }
+
 var regExp = /^[A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 //var regExp = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 var localeTimes = 0
@@ -46,74 +46,195 @@ module.exports = class MaskPassword {
   }
 
   /**
-   * @description     change RegExp(Regular Expression)
-   * @param {RegExp}  reg
-   * @default         /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+   * @description change RegExp(Regular Expression)
+   * @param       {RegExp}  reg
+   * @default     /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
    */
   static setRegularExpression(reg){regExp = reg}
 
   /**
-   * @description   get RegExp(Regular Expression)
-   * @return        {RegExp}
-   * @default       /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+   * @description get RegExp(Regular Expression)
+   * @return      {RegExp}
+   * @default     /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
    */
   static getRegularExpression(){return regExp}
 
   /**
-   * @description     locale
+   * @description locale
+   * @param       {uint}  hours
+   * @default     0
    */
   static setLocale(hours){localeTimes = hours}
+
+  /**
+   * @description locale
+   * @return      {uint}
+   * @default     0
+   */
   static getLocale(){return localeTimes}
 
   /**
-   * @description     push items
+   * @description mnemonic symbols
+   * @param       {string}  symbols
+   * @default     YyMmwdhIs
+   * @return      {JSON}
    */
-  pushYear4(){
+  static setSymbols(symbols){
+    let _temp = []
+    let $temp = ruleStruct.codeDates.concat(ruleStruct.codeStrings)
+    for(let index = 0; index < symbols.length; index++){
+      let char = symbols[index]
+      if(_temp.includes(char)) return {
+        result : false,
+        letter : char,
+        index  : index
+      }
+      if($temp.includes(char)) return {
+        result : false,
+        letter : char,
+        index  : index
+      }
+      _temp.push(char)
+      $temp[index] = char
+    }
+
+    for(let index = 0; index < symbols.length; index++){
+      let char = symbols[index]
+      if(index < 8)       ruleStruct.codeDates[index] = char
+      else if(index == 8) ruleStruct.codeStrings = char
+      switch(index){
+        case 0: ruleStruct.typeYear4.type = char;   break;
+        case 1: ruleStruct.typeYear2.type = char;   break;
+        case 2: ruleStruct.typeMonth3.type = char;  break;
+        case 3: ruleStruct.typeMonth2.type = char;  break;
+        case 4: ruleStruct.typeWeek.type = char;    break;
+        case 5: ruleStruct.typeDate.type = char;    break;
+        case 6: ruleStruct.typeHour.type = char;    break;
+        case 7: ruleStruct.typeMinute.type = char;  break;
+        case 8: ruleStruct.typeFix.type = char;     break;
+      }
+    }
+
+    return {
+      result : true,
+      letter : '',
+      index  : ''
+    }
+  } // setSymbols
+
+  /**
+   * @description mnemonic symbols
+   * @return      {string}
+   * @default     YyMmwdhIs
+   */
+  static getSymbols(){
+    return ruleStruct.codeDates.concat(ruleStruct.codeStrings).join('')
+  }
+
+  /** @constant {JSON} */
+  static get fullYear()     {return ruleStruct.typeYear4}
+  /** @constant {JSON} */
+  static get shortYear()    {return ruleStruct.typeYear2}
+  /** @constant {JSON} */
+  static get namedMonth()   {return ruleStruct.typeMonth3}
+  /** @constant {JSON} */
+  static get numericMonth() {return ruleStruct.typeMonth2}
+  /** @constant {JSON} */
+  static get weekday()      {return ruleStruct.typeWeek}
+  /** @constant {JSON} */
+  static get day()          {return ruleStruct.typeDate}
+  /** @constant {JSON} */
+  static get hour()         {return ruleStruct.typeHour}
+  /** @constant {JSON} */
+  static get minute()       {return ruleStruct.typeMinute}
+
+  /**
+   * @description     push full year
+   */
+  pushYear4 = () => {
     this.struct.push(ruleStruct.typeYear4)
     this.structString += ruleStruct.typeYear4.type
   }
-  pushYear2(){
+  /**
+   * @description     push short year
+   */
+  pushYear2 = () => {
     this.struct.push(ruleStruct.typeYear2)
     this.structString += ruleStruct.typeYear2.type
   }
-  pushMonth3(){
+  /**
+   * @description     push named month
+   */
+  pushMonth3 = () => {
     this.struct.push(ruleStruct.typeMonth3)
     this.structString += ruleStruct.typeMonth3.type
   }
-  pushMonth2(){
+  /**
+   * @description     push month
+   */
+  pushMonth2 = () => {
     this.struct.push(ruleStruct.typeMonth2)
     this.structString += ruleStruct.typeMonth2.type
   }
-  pushWeek(){
+  /**
+   * @description     push named weekday
+   */
+  pushWeek = () => {
     this.struct.push(ruleStruct.typeWeek)
     this.structString += ruleStruct.typeWeek.type
   }
-  pushDate(){
+  /**
+   * @description     push day
+   */
+  pushDate = () => {
     this.struct.push(ruleStruct.typeDate)
     this.structString += ruleStruct.typeDate.type
   }
-  pushHour(){
+  /**
+   * @description     push hour
+   */
+  pushHour = () => {
     this.struct.push(ruleStruct.typeHour)
     this.structString += ruleStruct.typeHour.type
   }
-  pushMinute(){
+  /**
+   * @description     push minute
+   */
+  pushMinute = () => {
     this.struct.push(ruleStruct.typeMinute)
     this.structString += ruleStruct.typeMinute.type
   }
-  pushFix(str){
+  /**
+   * @description     push string
+   * @param           {string}
+   */
+  pushFix = (str) => {
     let fix = JSON.parse(JSON.stringify(ruleStruct.typeFix));
     fix.format = str
     fix.length = fix.format.length
     this.struct.push(fix)
 
-    this.structString += `s[${fix.length}:${fix.format}]`
+    let fixToken = ruleStruct.codeStrings
+    this.structString += `${fixToken}[${fix.length}:${fix.format}]`
   }
+
+  /**
+   * @description     push sequence
+   * @param           {object[]}
+   */
+  pushSequence = rule => {
+    rule.forEach(item =>{
+      typeof item == 'string'
+        ? this.pushFix(item)
+        : (this.struct.push(item), this.structString += item.type)
+    })
+  } // pushSequence
 
   /**
    * @description   rule syntax check
    * @returns       {JSON}
    */
-  isValid(){
+  isValid = () => {
     var dateRule = 0
     var fixStrRule = 0
     var fixStrings = ''
@@ -161,7 +282,7 @@ module.exports = class MaskPassword {
    * @param           {string}    source  password statement
    * @returns         {JSON}
    */
-  compare(password){
+  compare = (password) => {
     return compareRule(this.struct, password)
   } // compare
 
@@ -171,7 +292,7 @@ module.exports = class MaskPassword {
    * @param           {string}    source  password statement
    * @returns         {JSON}
    */
-  compareRule(rule, source){
+  compareRule = (rule, source) => {
     return compareRule(rule, source)
   } // compareRule
 
@@ -180,7 +301,7 @@ module.exports = class MaskPassword {
    * @description encryption
    * @returns     {JSON[]}
    */
-  encryption(){
+  encryption = () => {
     let result = {}
 
     let temp = {
@@ -218,7 +339,7 @@ module.exports = class MaskPassword {
     result.content = en.content
 
     return result
-  } // 
+  } // encryption
 
   /**
    * @description decryption
@@ -226,7 +347,7 @@ module.exports = class MaskPassword {
    * @param       {string}  password
    * @returns     {string}
    */
-  decryption(encrypt, password){
+  decryption = (encrypt, password) => {
     let structString = Buffer.from(encrypt.struct, 'hex').toString('utf-8')
     let struct = structString.split(',')
 
@@ -251,7 +372,7 @@ module.exports = class MaskPassword {
     if(decryptedJson.length > 0 == 0) return false;
     let compared = this.compareRule(decryptedJson, password)
     return compared
-  }
+  } // decryption
 
 } // class
 
@@ -411,4 +532,4 @@ compareRule = (rule, source) => {
   let match = source == goalsJoined
 
   return match
-}
+} // compareRule
