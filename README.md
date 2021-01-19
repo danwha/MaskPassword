@@ -1,10 +1,10 @@
 
 # Masked Password
 
-## added setRegularExpression(), getRegularExpression 20210118
-## convert to class 20210116
-
-## added 20210115
+## 20210119 setLocale(), getLocale()
+## 20210118 setRegularExpression(), getRegularExpression 
+## 20210116 changed to class
+## 20210115 added 
   1. There were complaints that it was not encrypted. Encrypted.
   2. There was a complaint that the server administrator could know the password rules. I've tried.
 
@@ -44,20 +44,57 @@
   1. npm i maskpassword
   2. const MaskPassword = require('maskpassword')
 
+## github
+  https://github.com/danwha/MaskPassword
+
 ## usage
   1. creation
-  * 1-1. require        : const MaskPassword = require('./maskPassword')
-  * 1-2. receive        : <user's rule>
-  * 1-3. declare        : let ValidMask = new MaskPassword()
-  * 1-4. making rule    : ValidMask.push<any>([optional])
-  * 1-5. checking       : ValidMask.isValid()
-  * 1-6. encrypt        : let ruleEncrypt = ValidMask.encryption()
-  * 1-7. save(aka db)   : let storage = ruleEncrypt
+  * 1-1. require
+  ```
+  const MaskPassword = require('maskpassword')
+    or
+  const MaskPassword = require('./maskPassword')
+  ```
+  * 1-2. regular expression
+  ```
+  MaskPassword.setRegularExpression(<reg>)
+  MaskPassword.getRegularExpression()
+  ```
+  * 1-3. locale
+  ```
+  MaskPassword.setLocale(<hours>)
+  MaskPassword.getLocale()
+  ```
+
+  * 1-4. receive        : <user's rule>
+  * 1-5. declare
+  ```
+  let ValidMask = new MaskPassword()
+  ```
+  * 1-6. making rule
+  ```
+  ValidMask.push<any>([optional])
+  ```
+  * 1-7. checking
+  ```
+  ValidMask.isValid()
+  ```
+  * 1-8. encrypt
+  ```
+  let ruleEncrypt = ValidMask.encryption()
+  ```
+  * 1-9. save(aka db)
+  ```
+  let storage = ruleEncrypt
+  ```
   2. verification
   * 2-1. receive        : <user's password>
   * 2-2. load(aka db)   : 
-  * 2-3. decrypt        : let ruleStr2 = ValidMask.decryption(storage, password)
+  * 2-3. decrypt
+  ```
+  let ruleStr2 = ValidMask.decryption(storage, password)
+  ```
 
 ## If this has helped
   ### I think I can do better if I eat chicken.
-  ETH Wallet : 0x03AA0D76BE8f547244c5A7410674f400142305b0
+  > ETH Wallet : 0x03AA0D76BE8f547244c5A7410674f400142305b0
