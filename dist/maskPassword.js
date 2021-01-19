@@ -37,6 +37,7 @@ const ruleStruct = {
 }
 var regExp = /^[A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 //var regExp = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+var localeTimes = 0
 
 module.exports = class MaskPassword {
   constructor(){
@@ -49,14 +50,20 @@ module.exports = class MaskPassword {
    * @param {RegExp}  reg
    * @default         /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
    */
-  setRegularExpression(reg){regExp = reg}
+  static setRegularExpression(reg){regExp = reg}
 
   /**
    * @description   get RegExp(Regular Expression)
    * @return        {RegExp}
    * @default       /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
    */
-  getRegularExpression(){return regExp}
+  static getRegularExpression(){return regExp}
+
+  /**
+   * @description     locale
+   */
+  static setLocale(hours){localeTimes = hours}
+  static getLocale(){return localeTimes}
 
   /**
    * @description     push items
@@ -333,7 +340,7 @@ decrypt = (hash, secretKey = SecretKey) => {
 compareRule = (rule, source) => {
   const dayUTC = new Date();
   const dayUTCUnixtime = dayUTC.getTime() / 1000
-  const dayKrUnixtime = dayUTCUnixtime + 9 * 60 * 60 // to locale korea
+  const dayKrUnixtime = dayUTCUnixtime + localeTimes * 3600 // locale
   const day = new Date(dayKrUnixtime * 1000)
 
   /**
