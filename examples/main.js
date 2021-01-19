@@ -2,8 +2,7 @@
  * test code
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210118
- * @since 2020
+ * @version 20210120
  * @copyright danwha
  * @language node.js
  */
@@ -34,13 +33,15 @@ ValidMask.pushFix('Talking to the moon.')
 ValidMask.pushDate()
 ValidMask.pushFix('Walking on the roof.')
 ValidMask.pushHour()
-console.log(__line, 'ValidStatement syntax', ValidMask)
+console.log(__line, 'ValidStatement struct', ValidMask.struct)
+console.log(__line, 'ValidStatement string', ValidMask.structString)
 
 let InvalidMask = new MaskPassword()
 InvalidMask.pushMonth2()
 InvalidMask.pushDate()
 InvalidMask.pushHour()
-console.log(__line, 'InvalidStatement syntax', InvalidMask)
+console.log(__line, 'InvalidStatement struct', InvalidMask.struct)
+console.log(__line, 'InvalidStatement string', InvalidMask.structString)
 
 console.log(__line, MaskPassword.getRegularExpression())
 
@@ -76,3 +77,18 @@ let validPasswordStruct = [
 let validPassword = validPasswordStruct.join('')
 let ruleStr2 = ValidMask.decryption(storage, validPassword)
 console.log(__line, ruleStr2)
+
+console.log(MaskPassword.getSymbols())
+console.log(MaskPassword.setSymbols('ASDFGHJKLM'))
+//console.log(MaskPassword.setSymbols('ASDFs'))
+console.log(MaskPassword.getSymbols())
+
+let ValidMask2 = new MaskPassword()
+ValidMask2.pushSequence([
+  'Talking to the moon.',
+  MaskPassword.day,
+  'Walking on the roof.',
+  MaskPassword.hour
+])
+console.log(__line, 'ValidStatement struct', ValidMask2.struct)
+console.log(__line, 'ValidStatement string', ValidMask2.structString)
