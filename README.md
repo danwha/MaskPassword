@@ -1,6 +1,9 @@
 
 # Masked Password
 
+## 2021012018(v1.0.1)
+  bug fix
+
 ## 20210120 
   ### setSymbols(), getSymbols()
   ```javascript
