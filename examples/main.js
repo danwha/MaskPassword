@@ -92,3 +92,9 @@ ValidMask2.pushSequence([
 ])
 console.log(__line, 'ValidStatement struct', ValidMask2.struct)
 console.log(__line, 'ValidStatement string', ValidMask2.structString)
+
+let ruleEncrypt2 = ValidMask2.encryption()
+console.log(__line, 'Rule encrypt', ruleEncrypt2)
+
+let ruleStr3 = ValidMask.decryption(ruleEncrypt2, 'Talking to the moon.20Walking on the roof.18')
+console.log(__line, ruleStr3)
