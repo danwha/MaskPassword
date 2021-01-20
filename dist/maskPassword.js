@@ -29,7 +29,7 @@ const ruleStruct = {
   typeFix   : { "type":"s", "length":0, "format":""},
 
   codeDates : ['Y','y','M','m', 'w', 'd', 'h', 'I'],
-  codeStrings : 's',
+  codeString : 's',
 
   shortMonths : ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   shortWeeks  : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
@@ -81,7 +81,7 @@ module.exports = class MaskPassword {
    */
   static setSymbols(symbols){
     let _temp = []
-    let $temp = ruleStruct.codeDates.concat(ruleStruct.codeStrings)
+    let $temp = ruleStruct.codeDates.concat(ruleStruct.codeString)
     for(let index = 0; index < symbols.length; index++){
       let char = symbols[index]
       if(_temp.includes(char)) return {
@@ -101,7 +101,7 @@ module.exports = class MaskPassword {
     for(let index = 0; index < symbols.length; index++){
       let char = symbols[index]
       if(index < 8)       ruleStruct.codeDates[index] = char
-      else if(index == 8) ruleStruct.codeStrings = char
+      else if(index == 8) ruleStruct.codeString = char
       switch(index){
         case 0: ruleStruct.typeYear4.type = char;   break;
         case 1: ruleStruct.typeYear2.type = char;   break;
@@ -128,7 +128,7 @@ module.exports = class MaskPassword {
    * @default     YyMmwdhIs
    */
   static getSymbols(){
-    return ruleStruct.codeDates.concat(ruleStruct.codeStrings).join('')
+    return ruleStruct.codeDates.concat(ruleStruct.codeString).join('')
   }
 
   /** @constant {JSON} */
@@ -208,13 +208,13 @@ module.exports = class MaskPassword {
    * @description     push string
    * @param           {string}
    */
-  pushFix = (str) => {
+  pushFix = str => {
     let fix = JSON.parse(JSON.stringify(ruleStruct.typeFix));
     fix.format = str
     fix.length = fix.format.length
     this.struct.push(fix)
 
-    let fixToken = ruleStruct.codeStrings
+    let fixToken = ruleStruct.codeString
     this.structString += `${fixToken}[${fix.length}:${fix.format}]`
   }
 
@@ -242,7 +242,7 @@ module.exports = class MaskPassword {
       let item = this.struct[index]
       let type = item.type
       if(ruleStruct.codeDates.includes(type)) dateRule++
-      if(ruleStruct.codeStrings.includes(type)){
+      if(ruleStruct.codeString.includes(type)){
         fixStrRule++
         if(item.format == ''){
           return {result:false, source: item.format, error:'no string'}
@@ -321,7 +321,7 @@ module.exports = class MaskPassword {
         let len = str.length
         temp.struct.push(`s${len}`)
         temp.string.push(str)
-        temp.rules.push(`s[${len}:${str}]`)
+        temp.rules.push(`${item.type}[${len}:${str}]`)
       }
     })
 
@@ -367,9 +367,11 @@ module.exports = class MaskPassword {
     var stringBase64 = Buffer.from(fixedString).toString('base64')
     if(stringBase64.length < 32 ) stringBase64 += '\x00'.repeat(32)
     let secreatKey = stringBase64.substr(0,32)
+
     // decrypt
-    let decryptedJson = str2json(decrypt(encrypt, secreatKey))
-    if(decryptedJson.length > 0 == 0) return false;
+    let decrypted = decrypt(encrypt, secreatKey)
+    let decryptedJson = str2json(decrypted)
+    if(decryptedJson.length == 0) return false;
     let compared = this.compareRule(decryptedJson, password)
     return compared
   } // decryption
@@ -388,15 +390,15 @@ str2json = str => {
   while(index < len){
     let code = str[index]
     switch(code){
-      case 'Y': json.push(ruleStruct.typeYear4);  index++;  break
-      case 'y': json.push(ruleStruct.typeYear2);  index++;  break
-      case 'M': json.push(ruleStruct.typeMonth3); index++;  break
-      case 'm': json.push(ruleStruct.typeMonth2); index++;  break
-      case 'w': json.push(ruleStruct.typeWeek);   index++;  break
-      case 'd': json.push(ruleStruct.typeDate);   index++;  break
-      case 'h': json.push(ruleStruct.typeHour);   index++;  break
-      case 'I': json.push(ruleStruct.typeMinute); index++;  break
-      case 's':
+      case ruleStruct.typeYear4.type:   json.push(ruleStruct.typeYear4);  index++;  break
+      case ruleStruct.typeYear2.type:   json.push(ruleStruct.typeYear2);  index++;  break
+      case ruleStruct.typeMonth3.type:  json.push(ruleStruct.typeMonth3); index++;  break
+      case ruleStruct.typeMonth2.type:  json.push(ruleStruct.typeMonth2); index++;  break
+      case ruleStruct.typeWeek.type:    json.push(ruleStruct.typeWeek);   index++;  break
+      case ruleStruct.typeDate.type:    json.push(ruleStruct.typeDate);   index++;  break
+      case ruleStruct.typeHour.type:    json.push(ruleStruct.typeHour);   index++;  break
+      case ruleStruct.typeMinute.type:  json.push(ruleStruct.typeMinute); index++;  break
+      case ruleStruct.typeFix.type:
         let z = str.substr(index, len)
         let n = z.indexOf(':')
         let l = z.substr(2,n-2)
@@ -411,6 +413,8 @@ str2json = str => {
         return []
     } // switch
   } // while
+
+  console.log(__line, json)
 
   return json
 } // str2json
@@ -500,22 +504,22 @@ compareRule = (rule, source) => {
       $item.source = source.substr(index,item.length)
 
       switch(item.type){ /* ['Y','y','M','m', 'w', 'd', 'h', 'I'] */
-        case 'Y': $item.goal = now.year4;   break
-        case 'y': $item.goal = now.year2;   break
-        case 'M': $item.goal = now.month3;  break
-        case 'm': $item.goal = now.month2;  break
-        case 'w': $item.goal = now.week;    break
-        case 'd': $item.goal = now.date;    break
-        case 'h': $item.goal = now.hour;    break
-        case 'I': $item.goal = now.minute;  break
+        case ruleStruct.typeYear4.type: $item.goal = now.year4;   break
+        case ruleStruct.typeYear2.type: $item.goal = now.year2;   break
+        case ruleStruct.typeMonth3.type:$item.goal = now.month3;  break
+        case ruleStruct.typeMonth2.type:$item.goal = now.month2;  break
+        case ruleStruct.typeWeek.type:  $item.goal = now.week;    break
+        case ruleStruct.typeDate.type:  $item.goal = now.date;    break
+        case ruleStruct.typeHour.type:  $item.goal = now.hour;    break
+        case ruleStruct.typeMinute.type:$item.goal = now.minute;  break
       }
 
-      ['M','w'].includes(item.type)
+      [ruleStruct.typeMonth3.type, ruleStruct.typeWeek.type].includes(item.type)
         ? $item.match = ($item.goal == $item.source.toUpperCase())
         : $item.match = ($item.goal == $item.source*1)
 
       index += item.length
-    }else if(item.type == 's'){
+    }else if(item.type == ruleStruct.typeFix.type){
       let length = item.length
       $item.source = source.substr(index,length)
       $item.goal = item.format
