@@ -414,8 +414,6 @@ str2json = str => {
     } // switch
   } // while
 
-  console.log(__line, json)
-
   return json
 } // str2json
 
