@@ -88,6 +88,8 @@
     let ruleStr2 = ValidMask.decryption(storage, password)
     ```
 
+## See CHANGED.md for more.
+
 ## If this has helped
   ### I think I can do better if I eat chicken.
   > ETH Wallet : 0x03AA0D76BE8f547244c5A7410674f400142305b0
