@@ -2,7 +2,7 @@
  * @module MaskPassword
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210120
+ * @version 20210121
  * @copyright danwha
  * @language node.js
  */
@@ -40,9 +40,11 @@ var regExp = /^[A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 var localeTimes = 0
 
 module.exports = class MaskPassword {
-  constructor(){
+  constructor(rule = undefined){
     this.struct = []
     this.structString = ''
+
+    if(rule != undefined) this.pushSequence(rule)
   }
 
   /**
@@ -280,20 +282,22 @@ module.exports = class MaskPassword {
   /**
    * @description     compare
    * @param           {string}    source  password statement
+    * @param           {int}       locale(optional)
    * @returns         {JSON}
    */
-  compare = (password) => {
-    return compareRule(this.struct, password)
+  compare = (password, locale = undefined) => {
+    return compareRule(this.struct, password, locale)
   } // compare
 
   /**
    * @description     compare
    * @param           {JSON[]}    rules   rule structure
    * @param           {string}    source  password statement
+   * @param           {int}       locale(optional)
    * @returns         {JSON}
    */
-  compareRule = (rule, source) => {
-    return compareRule(rule, source)
+  compareRule = (rule, source, locale = undefined) => {
+    return compareRule(rule, source, locale)
   } // compareRule
 
 
@@ -345,9 +349,10 @@ module.exports = class MaskPassword {
    * @description decryption
    * @param       {JSON[]}  encrypt
    * @param       {string}  password
+   * @param       {int}     locale(optional)
    * @returns     {string}
    */
-  decryption = (encrypt, password) => {
+  decryption = (encrypt, password, locale = undefined) => {
     let structString = Buffer.from(encrypt.struct, 'hex').toString('utf-8')
     let struct = structString.split(',')
 
@@ -372,8 +377,8 @@ module.exports = class MaskPassword {
     let decrypted = decrypt(encrypt, secreatKey)
     let decryptedJson = str2json(decrypted)
     if(decryptedJson.length == 0) return false;
-    let compared = this.compareRule(decryptedJson, password)
-    return compared
+    let compare = this.compareRule(decryptedJson, password, locale)
+    return compare
   } // decryption
 
 } // class
@@ -458,12 +463,13 @@ decrypt = (hash, secretKey = SecretKey) => {
  * @description     compare
  * @param           {JSON[]}    rules   rule structure
  * @param           {string}    source  password statement
+ * @param       {int}     locale(optional)
  * @returns         {JSON}
  */
-compareRule = (rule, source) => {
+compareRule = (rule, source, locale = undefined) => {
   const dayUTC = new Date();
   const dayUTCUnixtime = dayUTC.getTime() / 1000
-  const dayKrUnixtime = dayUTCUnixtime + localeTimes * 3600 // locale
+  const dayKrUnixtime = dayUTCUnixtime + (locale == undefined ? localeTimes * 3600 : locale * 3600)
   const day = new Date(dayKrUnixtime * 1000)
 
   /**
