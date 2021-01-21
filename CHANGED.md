@@ -1,13 +1,13 @@
 # 20210121(v1.0.3)
   ```javascript
   new MaskPassword()
-  compare = (password)
+  compare(password)
   decryption(encrypt, password)
 
     changed to 
 
   new MaskPassword([rule])
-  compare = (password[, locale])
+  compare(password[, locale])
   decryption(encrypt, password[, locale])
   ```
 
