@@ -1,62 +1,4 @@
-
 # Masked Password
-
-## 2021012018(v1.0.1)
-  bug fix
-
-## 20210120 
-  ### setSymbols(), getSymbols()
-  ```javascript
-  console.log(MaskPassword.getSymbols())
-  console.log(MaskPassword.setSymbols('ASDFGHJKLM'))
-  ```
-  ### pushSequence()
-  ```javascript
-  let ValidMask1 = new MaskPassword()
-  ValidMask1.pushFix('Talking to the moon.')
-  ValidMask1.pushDate()
-  ValidMask1.pushFix('Walking on the roof.')
-  ValidMask1.pushHour()
-  
-    or
-
-  let ValidMask2 = new MaskPassword()
-  ValidMask2.pushSequence([
-    'Talking to the moon.',
-    MaskPassword.day,
-    'Walking on the roof.',
-    MaskPassword.hour
-  ])
-
-
-  console.log('ValidStatement struct', ValidMask2.struct)
-  console.log('ValidStatement string', ValidMask2.structString)
-  ```
-
-## 20210119 setLocale(), getLocale()
-  ```javascript
-  MaskPassword.setLocale(9)
-  console.log(MaskPassword.getLocale())
-  ```
-
-## 20210118 setRegularExpression(), getRegularExpression()
-  ```javascript
-  const validRegExp   = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
-  const invalidRegExp = `/^[가-A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/`
-  const setRegExp = reg => {
-    var isValid = true;
-    try {new RegExp(reg)} catch(e) {isValid = false}
-    if(isValid) MaskPassword.setRegularExpression(reg)
-    return isValid
-  }
-  console.log(MaskPassword.getRegularExpression())
-  console.log(setRegExp(validRegExp))
-  ```
-
-## 20210116 changed to class
-## 20210115 added 
-  1. There were complaints that it was not encrypted. Encrypted.
-  2. There was a complaint that the server administrator could know the password rules. I've tried.
 
 ## why - Many services require the following:
   1. Don't use passwords that are easy to remember.
@@ -101,45 +43,43 @@
   https://github.com/danwha/MaskPassword
 
 ## usage
-  1. creation
-  * 1-1. require
+  0. preparations
+  * 0-1. require
     ```javascript
     const MaskPassword = require('maskpassword')
       or
     const MaskPassword = require('./maskPassword')
     ```
-  * 1-2. regular expression
+  * 0-2. regular expression
     ```javascript
     MaskPassword.setRegularExpression(<reg>)
     MaskPassword.getRegularExpression()
     ```
-  * 1-3. locale
+  * 0-3. locale
     ```javascript
     MaskPassword.setLocale(<hours>)
     MaskPassword.getLocale()
     ```
 
-  * 1-4. receive        : <user's rule>
-  * 1-5. declare
+  1. creation
+  * 1-1. receive        : <user's rule>
+  * 1-2. declare & making rule
     ```javascript
-    let ValidMask = new MaskPassword()
+    let ValidMask = new MaskPassword([rule])
     ```
-  * 1-6. making rule
-    ```javascript
-    ValidMask.push<any>([optional])
-    ```
-  * 1-7. checking
+  * 1-3. checking
     ```javascript
     ValidMask.isValid()
     ```
-  * 1-8. encrypt
+  * 1-4. encrypt
     ```javascript
     let ruleEncrypt = ValidMask.encryption()
     ```
-  * 1-9. save(aka db)
+  * 1-5. save(aka db)
     ```javascript
     let storage = ruleEncrypt
     ```
+
   2. verification
   * 2-1. receive        : <user's password>
   * 2-2. load(aka db)   : 
