@@ -54,6 +54,13 @@
     ```javascript
     MaskPassword.setRegularExpression(<reg>)
     MaskPassword.getRegularExpression()
+    
+    sample expressions
+      korean
+        const validRegExp   = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+      japanese
+        const validRegExp   = /^[ぁ-ゔ一-龥0-9-!:^_'?,.=\s+]{1,200}$/
+      see exapmples/main00.js
     ```
   * 0-3. locale
     ```javascript
