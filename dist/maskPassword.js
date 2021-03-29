@@ -2,7 +2,7 @@
  * @module MaskPassword
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210121
+ * @version 20210329
  * @copyright danwha
  * @language node.js
  */
@@ -32,11 +32,16 @@ const ruleStruct = {
   codeString : 's',
 
   shortMonths : ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-  shortWeeks  : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+  shortWeeks  : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+
+  // added 20210329
+  longEnabled : false, // if true, shortMonths, shortWeeks are disabled.
+  longMonths  : ['January','February','March','April','May','June','July','August','September','October','November','December'],
+  longWeeks   : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 }
 
-var regExp = /^[A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
-//var regExp = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+//var regExp = /^[A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
+var regExp = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 var localeTimes = 0
 
 module.exports = class MaskPassword {
@@ -44,8 +49,25 @@ module.exports = class MaskPassword {
     this.struct = []
     this.structString = ''
 
-    if(rule != undefined) this.pushSequence(rule)
+    if(rule != undefined) this.#pushSequence(rule)
   }
+
+  #pushSequence = rule => {
+    rule.forEach(item =>{
+      typeof item == 'string'
+        ? this.#pushFix(item)
+        : (this.struct.push(item), this.structString += item.type)
+    })
+  } // #pushSequence
+  #pushFix = str => {
+    let fix = JSON.parse(JSON.stringify(ruleStruct.typeFix));
+    fix.format = str
+    fix.length = fix.format.length
+    this.struct.push(fix)
+
+    let fixToken = ruleStruct.codeString
+    this.structString += `${fixToken}[${fix.length}:${fix.format}]`
+  } // #pushFix
 
   /**
    * @description change RegExp(Regular Expression)
@@ -98,7 +120,7 @@ module.exports = class MaskPassword {
       }
       _temp.push(char)
       $temp[index] = char
-    }
+    } // for
 
     for(let index = 0; index < symbols.length; index++){
       let char = symbols[index]
@@ -115,7 +137,7 @@ module.exports = class MaskPassword {
         case 7: ruleStruct.typeMinute.type = char;  break;
         case 8: ruleStruct.typeFix.type = char;     break;
       }
-    }
+    } // for
 
     return {
       result : true,
@@ -132,6 +154,45 @@ module.exports = class MaskPassword {
   static getSymbols(){
     return ruleStruct.codeDates.concat(ruleStruct.codeString).join('')
   }
+
+  // [ added 20210324
+  /**
+   * @description name mode change
+   * @param {bool} enable 
+   * @returns {bool} enabled/disabled(default)
+   */
+  static enableLongNames(enable = undefined){
+    if(enable == undefined) return ruleStruct.longEnabled
+    ruleStruct.longEnabled = enable
+  }
+  /**
+   * @description set month name
+   * @param {string[]} names 12 month names
+   * @returns {bool} success/failure
+   * @returns {string[]} 12 month names
+   */
+  static monthNames(names = undefined){
+    if(names == undefined) return ruleStruct.longMonths
+    if(names.length != 12) return false
+    if(names.some(m => m == '')) return false
+    ruleStruct.longMonths = names
+    return true
+  }
+  /**
+   * @description set weekday name
+   * @param {string[]} names 7 day names
+   * @returns {bool} success/failure
+   * @returns {string[]} 7 day names
+   */
+  static weekNames(names = undefined){
+    if(names == undefined) return ruleStruct.longWeeks
+    if(names.length != 7) return false
+    if(names.some(m => m == '')) return false
+    ruleStruct.longWeeks = names
+    return true
+  }
+  // ] added 20210324
+
 
   /** @constant {JSON} */
   static get fullYear()     {return ruleStruct.typeYear4}
@@ -150,66 +211,47 @@ module.exports = class MaskPassword {
   /** @constant {JSON} */
   static get minute()       {return ruleStruct.typeMinute}
 
-  /**
-   * @description     push full year
-   */
+  /** @deprecated 20210324 */
   pushYear4 = () => {
     this.struct.push(ruleStruct.typeYear4)
     this.structString += ruleStruct.typeYear4.type
   }
-  /**
-   * @description     push short year
-   */
+  /** @deprecated 20210324 */
   pushYear2 = () => {
     this.struct.push(ruleStruct.typeYear2)
     this.structString += ruleStruct.typeYear2.type
   }
-  /**
-   * @description     push named month
-   */
+  /** @deprecated 20210324 */
   pushMonth3 = () => {
     this.struct.push(ruleStruct.typeMonth3)
     this.structString += ruleStruct.typeMonth3.type
   }
-  /**
-   * @description     push month
-   */
+  /** @deprecated 20210324 */
   pushMonth2 = () => {
     this.struct.push(ruleStruct.typeMonth2)
     this.structString += ruleStruct.typeMonth2.type
   }
-  /**
-   * @description     push named weekday
-   */
+  /** @deprecated 20210324 */
   pushWeek = () => {
     this.struct.push(ruleStruct.typeWeek)
     this.structString += ruleStruct.typeWeek.type
   }
-  /**
-   * @description     push day
-   */
+  /** @deprecated 20210324 */
   pushDate = () => {
     this.struct.push(ruleStruct.typeDate)
     this.structString += ruleStruct.typeDate.type
   }
-  /**
-   * @description     push hour
-   */
+  /** @deprecated 20210324 */
   pushHour = () => {
     this.struct.push(ruleStruct.typeHour)
     this.structString += ruleStruct.typeHour.type
   }
-  /**
-   * @description     push minute
-   */
+  /** @deprecated 20210324 */
   pushMinute = () => {
     this.struct.push(ruleStruct.typeMinute)
     this.structString += ruleStruct.typeMinute.type
   }
-  /**
-   * @description     push string
-   * @param           {string}
-   */
+  /** @deprecated 20210324 */
   pushFix = str => {
     let fix = JSON.parse(JSON.stringify(ruleStruct.typeFix));
     fix.format = str
@@ -220,10 +262,7 @@ module.exports = class MaskPassword {
     this.structString += `${fixToken}[${fix.length}:${fix.format}]`
   }
 
-  /**
-   * @description     push sequence
-   * @param           {object[]}
-   */
+  /** @deprecated 20210324 */
   pushSequence = rule => {
     rule.forEach(item =>{
       typeof item == 'string'
@@ -282,7 +321,7 @@ module.exports = class MaskPassword {
   /**
    * @description     compare
    * @param           {string}    source  password statement
-    * @param           {int}       locale(optional)
+   * @param           {int}       locale(optional)
    * @returns         {JSON}
    */
   compare = (password, locale = undefined) => {
@@ -300,14 +339,12 @@ module.exports = class MaskPassword {
     return compareRule(rule, source, locale)
   } // compareRule
 
-
   /**
    * @description encryption
    * @returns     {JSON[]}
    */
-  encryption = () => {
+  encryption = (locale = undefined) => { // @added 20210329
     let result = {}
-
     let temp = {
       string      : [],
       struct      : [],
@@ -316,18 +353,27 @@ module.exports = class MaskPassword {
       rulesJoins  : '',
       secreatKey  : '',
     }
+
     this.struct.forEach(item => {
       if(ruleStruct.codeDates.includes(item.type)){
-        temp.struct.push(`n${item.length}`)
+        if(! ruleStruct.longEnabled){
+          temp.struct.push(`n${item.length}`) // code : n?
+        }else{
+          let now = getNow(locale)
+          let nameLength = 
+          (item.type == ruleStruct.typeMonth3.type) ? now.month3.length :
+          (item.type == ruleStruct.typeWeek.type) ? now.week.length : item.length
+          temp.struct.push(`n${nameLength}`) // code : n?
+        }
         temp.rules.push(item.type)
       }else{
         let str = item.format
         let len = str.length
-        temp.struct.push(`s${len}`)
+        temp.struct.push(`s${len}`)         // code : s?
         temp.string.push(str)
         temp.rules.push(`${item.type}[${len}:${str}]`)
       }
-    })
+    }) // forEach
 
     let buffer = Buffer.from(temp.struct.join(','), 'utf-8')
     result.struct = buffer.toString('hex')
@@ -355,6 +401,7 @@ module.exports = class MaskPassword {
   decryption = (encrypt, password, locale = undefined) => {
     let structString = Buffer.from(encrypt.struct, 'hex').toString('utf-8')
     let struct = structString.split(',')
+    //console.log(__line,struct)
 
     // get fixed string
     var index = 0
@@ -380,7 +427,6 @@ module.exports = class MaskPassword {
     let compare = this.compareRule(decryptedJson, password, locale)
     return compare
   } // decryption
-
 } // class
 
 /**
@@ -459,14 +505,8 @@ decrypt = (hash, secretKey = SecretKey) => {
   return decrpyted.toString()
 }
 
-/**
- * @description     compare
- * @param           {JSON[]}    rules   rule structure
- * @param           {string}    source  password statement
- * @param       {int}     locale(optional)
- * @returns         {JSON}
- */
-compareRule = (rule, source, locale = undefined) => {
+
+getNow = (locale = undefined) => {
   const dayUTC = new Date();
   const dayUTCUnixtime = dayUTC.getTime() / 1000
   const dayKrUnixtime = dayUTCUnixtime + (locale == undefined ? localeTimes * 3600 : locale * 3600)
@@ -483,61 +523,61 @@ compareRule = (rule, source, locale = undefined) => {
     return s.substr(s.length - 2, 2);
   }
 
-  const now = {
+  return {
     day     : day,
     year4   : day.getUTCFullYear().toString(),
     year2   : day.getUTCFullYear().toString().substr(2,2),
-    month3  : ruleStruct.shortMonths[day.getUTCMonth()].toUpperCase(),
+    month3  : ruleStruct.longEnabled
+      ? ruleStruct.longMonths[day.getUTCMonth()]
+      : ruleStruct.shortMonths[day.getUTCMonth()].toUpperCase(),
     month2  : makeZeroString((day.getUTCMonth() + 1)),
-    week    : ruleStruct.shortWeeks[day.getUTCDay()].toUpperCase(),
+    week    : ruleStruct.longEnabled
+      ? ruleStruct.longWeeks[day.getUTCDay()].toUpperCase()
+      : ruleStruct.shortWeeks[day.getUTCDay()].toUpperCase(),
     date    : makeZeroString(day.getUTCDate()),
     hour    : makeZeroString(day.getUTCHours()),
     minute  : makeZeroString(day.getUTCMinutes()),
   }
-
+}
+/**
+ * @description compare
+ * @param       {JSON[]}    rules   rule structure
+ * @param       {string}    source  password statement
+ * @param       {int}       locale(optional)
+ * @returns     {JSON}
+ */
+compareRule = (rule, source, locale = undefined) => {
+  const now = getNow(locale)
   var index = 0
   let $rule = []
   rule.forEach(item => {
-    let $item = {
-      match   : false,
-      source  : '',
-      goal    : '',
-    }
-
+    var $goal
     if(ruleStruct.codeDates.includes(item.type)){
-      $item.source = source.substr(index,item.length)
-
       switch(item.type){ /* ['Y','y','M','m', 'w', 'd', 'h', 'I'] */
-        case ruleStruct.typeYear4.type: $item.goal = now.year4;   break
-        case ruleStruct.typeYear2.type: $item.goal = now.year2;   break
-        case ruleStruct.typeMonth3.type:$item.goal = now.month3;  break
-        case ruleStruct.typeMonth2.type:$item.goal = now.month2;  break
-        case ruleStruct.typeWeek.type:  $item.goal = now.week;    break
-        case ruleStruct.typeDate.type:  $item.goal = now.date;    break
-        case ruleStruct.typeHour.type:  $item.goal = now.hour;    break
-        case ruleStruct.typeMinute.type:$item.goal = now.minute;  break
+        case ruleStruct.typeYear4.type: $goal = now.year4;   break
+        case ruleStruct.typeYear2.type: $goal = now.year2;   break
+        case ruleStruct.typeMonth3.type:$goal = now.month3;  break
+        case ruleStruct.typeMonth2.type:$goal = now.month2;  break
+        case ruleStruct.typeWeek.type:  $goal = now.week;    break
+        case ruleStruct.typeDate.type:  $goal = now.date;    break
+        case ruleStruct.typeHour.type:  $goal = now.hour;    break
+        case ruleStruct.typeMinute.type:$goal = now.minute;  break
       }
-
-      [ruleStruct.typeMonth3.type, ruleStruct.typeWeek.type].includes(item.type)
-        ? $item.match = ($item.goal == $item.source.toUpperCase())
-        : $item.match = ($item.goal == $item.source*1)
-
       index += item.length
     }else if(item.type == ruleStruct.typeFix.type){
       let length = item.length
-      $item.source = source.substr(index,length)
-      $item.goal = item.format
-      $item.match = (item.format == $item.source)
+      $goal = item.format
       index += length
     } // if
 
-    $rule.push($item)
+    $rule.push($goal)
   }) // forEach
 
+  //console.log(__line, $rule)
   let goals = []
-  $rule.forEach(item => goals.push(item.goal))
+  $rule.forEach(item => goals.push(item))
   let goalsJoined = goals.join('')
   let match = source == goalsJoined
-
+  //console.log(__line, source, goalsJoined)
   return match
 } // compareRule
