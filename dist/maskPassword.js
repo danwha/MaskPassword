@@ -532,7 +532,7 @@ getNow = (locale = undefined) => {
       : ruleStruct.shortMonths[day.getUTCMonth()].toUpperCase(),
     month2  : makeZeroString((day.getUTCMonth() + 1)),
     week    : ruleStruct.longEnabled
-      ? ruleStruct.longWeeks[day.getUTCDay()].toUpperCase()
+      ? ruleStruct.longWeeks[day.getUTCDay()]
       : ruleStruct.shortWeeks[day.getUTCDay()].toUpperCase(),
     date    : makeZeroString(day.getUTCDate()),
     hour    : makeZeroString(day.getUTCHours()),
