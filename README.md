@@ -54,18 +54,22 @@
     ```javascript
     MaskPassword.setRegularExpression(<reg>)
     MaskPassword.getRegularExpression()
-    
-    sample expressions
-      korean
-        const validRegExp   = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
-      japanese
-        const validRegExp   = /^[ぁ-ゔ一-龥0-9-!:^_'?,.=\s+]{1,200}$/
-      see examples/main00.js
     ```
   * 0-3. locale
     ```javascript
     MaskPassword.setLocale(<hours>)
     MaskPassword.getLocale()
+    ```
+  * 0-4. long names(20210329, v1.1.0)
+    ```javascript
+    MaskPassword.enableLongNames(<bool>)
+    MaskPassword.enableLongNames()
+
+    MaskPassword.monthNames(<strings>)
+    MaskPassword.monthNames()
+
+    MaskPassword.weekNames(<strings>)
+    MaskPassword.weekNames()
     ```
 
   1. creation
@@ -95,7 +99,7 @@
     let ruleStr2 = ValidMask.decryption(storage, password)
     ```
 
-## See CHANGED.md for more.
+## See [CHANGED.md](https://github.com/danwha/MaskPassword/blob/main/CHANGED.md) for more.
 
 ## If this has helped
   ### I think I can do better if I eat chicken.
