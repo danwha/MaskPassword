@@ -2,7 +2,7 @@
  * @module MaskPassword
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210329
+ * @version 20210515
  * @copyright danwha
  * @language node.js
  */
@@ -211,66 +211,6 @@ module.exports = class MaskPassword {
   /** @constant {JSON} */
   static get minute()       {return ruleStruct.typeMinute}
 
-  /** @deprecated 20210324 */
-  pushYear4 = () => {
-    this.struct.push(ruleStruct.typeYear4)
-    this.structString += ruleStruct.typeYear4.type
-  }
-  /** @deprecated 20210324 */
-  pushYear2 = () => {
-    this.struct.push(ruleStruct.typeYear2)
-    this.structString += ruleStruct.typeYear2.type
-  }
-  /** @deprecated 20210324 */
-  pushMonth3 = () => {
-    this.struct.push(ruleStruct.typeMonth3)
-    this.structString += ruleStruct.typeMonth3.type
-  }
-  /** @deprecated 20210324 */
-  pushMonth2 = () => {
-    this.struct.push(ruleStruct.typeMonth2)
-    this.structString += ruleStruct.typeMonth2.type
-  }
-  /** @deprecated 20210324 */
-  pushWeek = () => {
-    this.struct.push(ruleStruct.typeWeek)
-    this.structString += ruleStruct.typeWeek.type
-  }
-  /** @deprecated 20210324 */
-  pushDate = () => {
-    this.struct.push(ruleStruct.typeDate)
-    this.structString += ruleStruct.typeDate.type
-  }
-  /** @deprecated 20210324 */
-  pushHour = () => {
-    this.struct.push(ruleStruct.typeHour)
-    this.structString += ruleStruct.typeHour.type
-  }
-  /** @deprecated 20210324 */
-  pushMinute = () => {
-    this.struct.push(ruleStruct.typeMinute)
-    this.structString += ruleStruct.typeMinute.type
-  }
-  /** @deprecated 20210324 */
-  pushFix = str => {
-    let fix = JSON.parse(JSON.stringify(ruleStruct.typeFix));
-    fix.format = str
-    fix.length = fix.format.length
-    this.struct.push(fix)
-
-    let fixToken = ruleStruct.codeString
-    this.structString += `${fixToken}[${fix.length}:${fix.format}]`
-  }
-
-  /** @deprecated 20210324 */
-  pushSequence = rule => {
-    rule.forEach(item =>{
-      typeof item == 'string'
-        ? this.pushFix(item)
-        : (this.struct.push(item), this.structString += item.type)
-    })
-  } // pushSequence
-
   /**
    * @description   rule syntax check
    * @returns       {JSON}
@@ -369,7 +309,7 @@ module.exports = class MaskPassword {
       }else{
         let str = item.format
         let len = str.length
-        temp.struct.push(`s${len}`)         // code : s?
+        temp.struct.push(`s${len}`) // code : s?
         temp.string.push(str)
         temp.rules.push(`${item.type}[${len}:${str}]`)
       }
@@ -485,7 +425,7 @@ str2json = str => {
  * @param {string} text
  * @returns {JSON}
  */
-encrypt = (text, secretKey = SecretKey) => {
+const encrypt = (text, secretKey = SecretKey) => {
   const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
   const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
   return {
@@ -499,14 +439,13 @@ encrypt = (text, secretKey = SecretKey) => {
  * @param {JSON} hash
  * @returns {string}
  */
-decrypt = (hash, secretKey = SecretKey) => {
+const decrypt = (hash, secretKey = SecretKey) => {
   const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.iv, 'hex'))
   const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()])
   return decrpyted.toString()
 }
 
-
-getNow = (locale = undefined) => {
+const getNow = (locale = undefined) => {
   const dayUTC = new Date();
   const dayUTCUnixtime = dayUTC.getTime() / 1000
   const dayKrUnixtime = dayUTCUnixtime + (locale == undefined ? localeTimes * 3600 : locale * 3600)
@@ -546,7 +485,7 @@ getNow = (locale = undefined) => {
  * @param       {int}       locale(optional)
  * @returns     {JSON}
  */
-compareRule = (rule, source, locale = undefined) => {
+const compareRule = (rule, source, locale = undefined) => {
   const now = getNow(locale)
   var index = 0
   let $rule = []
