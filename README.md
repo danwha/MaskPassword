@@ -23,14 +23,15 @@
   4. If necessary, additional encryption can be added.
 
 ## example
-  1. fixed string : danwha
-  2. Month name associated with the month
-  3. fixed string : -
-  4. Current hour
+  1. 'Sunrise in the east.'
+  2. short numeric year
+  3. numeric month
+  4. 'hot summer has come.'
 
-  If today is January 8, 2021 at 22:00, the correct password is danwhaJAN-22.
+  If now is June 2021, the correct password is
+    'Sunrise in the east.2106hot summer has come.'.
 
-  If today is August 18, 2021 09:00, the correct password is danwhaAUG-09.
+  If now is October 2022, the correct password is 'Sunrise in the east.2210hot summer has come.'.
 
 ## install & require
   1. npm i maskpassword
@@ -50,17 +51,17 @@
       or
     const MaskPassword = require('./maskPassword')
     ```
-  * 0-2. regular expression
+  * 0-2. regular expression(20210609, v1.2.0)
     ```javascript
-    MaskPassword.setRegularExpression(<reg>)
-    MaskPassword.getRegularExpression()
+    MaskPassword.regularExpression(<reg>)
+    MaskPassword.regularExpression()
     ```
-  * 0-3. locale
+  * 0-3. locale(20210609, v1.2.0)
     ```javascript
-    MaskPassword.setLocale(<hours>)
-    MaskPassword.getLocale()
+    MaskPassword.locale(<hours>)
+    MaskPassword.locale()
     ```
-  * 0-4. long names(20210329, v1.1.0)
+  * 0-4. long names
     ```javascript
     MaskPassword.enableLongNames(<bool>)
     MaskPassword.enableLongNames()
