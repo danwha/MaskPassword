@@ -2,7 +2,7 @@
  * @module MaskPassword
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210515
+ * @version 20210609
  * @copyright danwha
  * @language node.js
  */
@@ -40,7 +40,6 @@ const ruleStruct = {
   longWeeks   : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 }
 
-//var regExp = /^[A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 var regExp = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 var localeTimes = 0
 
@@ -69,41 +68,59 @@ module.exports = class MaskPassword {
     this.structString += `${fixToken}[${fix.length}:${fix.format}]`
   } // #pushFix
 
-  /**
-   * @description change RegExp(Regular Expression)
-   * @param       {RegExp}  reg
-   * @default     /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
-   */
+  /** @constant {JSON} */
+  static get fullYear()     {return ruleStruct.typeYear4}
+  /** @constant {JSON} */
+  static get shortYear()    {return ruleStruct.typeYear2}
+  /** @constant {JSON} */
+  static get namedMonth()   {return ruleStruct.typeMonth3}
+  /** @constant {JSON} */
+  static get numericMonth() {return ruleStruct.typeMonth2}
+  /** @constant {JSON} */
+  static get weekday()      {return ruleStruct.typeWeek}
+  /** @constant {JSON} */
+  static get day()          {return ruleStruct.typeDate}
+  /** @constant {JSON} */
+  static get hour()         {return ruleStruct.typeHour}
+  /** @constant {JSON} */
+  static get minute()       {return ruleStruct.typeMinute}
+  
+  /** @deprecated 20210609   */
   static setRegularExpression(reg){regExp = reg}
+  /** @deprecated 20210609   */
+  static getRegularExpression(){return regExp}
 
-  /**
-   * @description get RegExp(Regular Expression)
+  /** new 20210609
+   * @description get/set RegExp(Regular Expression)
    * @return      {RegExp}
    * @default     /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
    */
-  static getRegularExpression(){return regExp}
+   static regularExpression(reg = undefined){
+    if(reg == undefined)  return regExp
+    regExp = reg
+  }
 
-  /**
-   * @description locale
+  /** @deprecated 20210609   */
+  static setLocale(hours){localeTimes = hours}
+  /** @deprecated 20210609   */
+  static getLocale(){return localeTimes}
+
+  /** new 20210609
+   * @description get/set locale
    * @param       {uint}  hours
    * @default     0
    */
-  static setLocale(hours){localeTimes = hours}
+   static locale(hours = undefined){
+    if(hours == undefined) return localeTimes
+    localeTimes = hours
+  }
 
-  /**
-   * @description locale
-   * @return      {uint}
-   * @default     0
-   */
-  static getLocale(){return localeTimes}
+  /** @deprecated 20210609 : hiding(to inner method) in the future  */
+  static setSymbols(symbols){ return this.#setSymbols(symbols)}
+  /** @deprecated 20210609   */
+  static getSymbols(){        return ruleStruct.codeDates.concat(ruleStruct.codeString).join('')}
 
-  /**
-   * @description mnemonic symbols
-   * @param       {string}  symbols
-   * @default     YyMmwdhIs
-   * @return      {JSON}
-   */
-  static setSymbols(symbols){
+  static #setSymbols = symbols => {
     let _temp = []
     let $temp = ruleStruct.codeDates.concat(ruleStruct.codeString)
     for(let index = 0; index < symbols.length; index++){
@@ -146,16 +163,20 @@ module.exports = class MaskPassword {
     }
   } // setSymbols
 
-  /**
-   * @description mnemonic symbols
-   * @return      {string}
+  /** new 20210609
+   * @description get/set mnemonic symbols
+   * @param       {string}  symbols
    * @default     YyMmwdhIs
-   */
-  static getSymbols(){
-    return ruleStruct.codeDates.concat(ruleStruct.codeString).join('')
+   * @return      {string}
+   * @return      {JSON}
+  */
+  static symbols(symbols = undefined){
+    if(symbols == undefined)
+      return ruleStruct.codeDates.concat(ruleStruct.codeString).join('')
+
+    this.#setSymbols(symbols)
   }
 
-  // [ added 20210324
   /**
    * @description name mode change
    * @param {bool} enable 
@@ -191,25 +212,6 @@ module.exports = class MaskPassword {
     ruleStruct.longWeeks = names
     return true
   }
-  // ] added 20210324
-
-
-  /** @constant {JSON} */
-  static get fullYear()     {return ruleStruct.typeYear4}
-  /** @constant {JSON} */
-  static get shortYear()    {return ruleStruct.typeYear2}
-  /** @constant {JSON} */
-  static get namedMonth()   {return ruleStruct.typeMonth3}
-  /** @constant {JSON} */
-  static get numericMonth() {return ruleStruct.typeMonth2}
-  /** @constant {JSON} */
-  static get weekday()      {return ruleStruct.typeWeek}
-  /** @constant {JSON} */
-  static get day()          {return ruleStruct.typeDate}
-  /** @constant {JSON} */
-  static get hour()         {return ruleStruct.typeHour}
-  /** @constant {JSON} */
-  static get minute()       {return ruleStruct.typeMinute}
 
   /**
    * @description   rule syntax check
@@ -283,7 +285,7 @@ module.exports = class MaskPassword {
    * @description encryption
    * @returns     {JSON[]}
    */
-  encryption = (locale = undefined) => { // @added 20210329
+  encryption = (locale = undefined) => {
     let result = {}
     let temp = {
       string      : [],
@@ -341,7 +343,6 @@ module.exports = class MaskPassword {
   decryption = (encrypt, password, locale = undefined) => {
     let structString = Buffer.from(encrypt.struct, 'hex').toString('utf-8')
     let struct = structString.split(',')
-    //console.log(__line,struct)
 
     // get fixed string
     var index = 0
@@ -512,11 +513,10 @@ const compareRule = (rule, source, locale = undefined) => {
     $rule.push($goal)
   }) // forEach
 
-  //console.log(__line, $rule)
   let goals = []
   $rule.forEach(item => goals.push(item))
   let goalsJoined = goals.join('')
   let match = source == goalsJoined
-  //console.log(__line, source, goalsJoined)
+
   return match
 } // compareRule
