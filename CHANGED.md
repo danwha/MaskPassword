@@ -1,21 +1,17 @@
-# 20210329(v1.1.0)
+# 20210609(v1.2.0)
   deprecated
   ```javascript
-    pushYear4()
-    pushYear2()
-    pushMonth3()
-    pushMonth2()
-    pushWeek()
-    pushDate()
-    pushHour()
-    pushMinute()
-    pushFix()
-    pushSequence()
+  static setRegularExpression(reg)
+  static getRegularExpression()
+  static setLocale(hours)
+  static getLocale()
+  static setSymbols(symbols)
+  static getSymbols()
   ```
 
   new
   ```javascript
-    enableLongNames(enable = undefined)
-    monthNames(names = undefined)
-    weekNames(names = undefined)
+  static regularExpression(reg = undefined)
+  static locale(hours = undefined)
+  static symbols(symbols = undefined)
   ```
