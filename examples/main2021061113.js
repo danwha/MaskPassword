@@ -15,36 +15,9 @@ require('./utilities')
 
 // 🔥 samples
 const samples =[
-  {
-    id    : 'person0',
-    rule  : [
-      'Sunrise in the east.',
-      MaskPassword.shortYear,
-      MaskPassword.numericMonth,
-      'hot summer has come.',
-    ],
-    personal  : 9
-  },
-  {
-    id    : 'person1',
-    rule  : [
-      MaskPassword.numericMonth,
-      'Talking to the moon.',
-      MaskPassword.hour,
-      'Walking on the roof.',
-    ],
-    personal  : 0
-  },
-  {
-    id    : 'person2',
-    rule  : [
-      MaskPassword.numericMonth,
-      MaskPassword.day,
-      '冬の雨',
-      '涙忘れた愛'
-    ],
-    personal  : 17
-  },
+  {id : 'person0', rule : ['Sunrise in the east.', MaskPassword.shortYear, MaskPassword.numericMonth, 'hot summer has come.',], personal  : 9},
+  {id : 'person1', rule : [MaskPassword.numericMonth, 'Talking to the moon.', MaskPassword.hour, 'Walking on the roof.',],      personal  : 0},
+  {id : 'person2', rule : [MaskPassword.numericMonth, MaskPassword.day, '冬の雨', '涙忘れた愛'],                                    personal  : 17}
 ]
 
 const passwords = [
