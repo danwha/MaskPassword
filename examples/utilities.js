@@ -1,3 +1,6 @@
+global.YES = true;
+global.NO = false;
+
 Object.defineProperty(global, '__stack', {
   get: function () {
     var orig = Error.prepareStackTrace;
@@ -14,6 +17,7 @@ Object.defineProperty(global, '__function', {
     return __stack[1].getFunctionName();
   },
 });
+// https://en.wikipedia.org/wiki/ANSI_escape_code
 Object.defineProperty(global, '__line', {
   get: function () {
     let filepath = __stack[1].getFileName();
