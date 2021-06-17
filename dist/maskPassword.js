@@ -2,21 +2,17 @@
  * @module MaskPassword
  * 
  * @author danwha <danwha@hanmail.net>
- * @version 20210609
+ * @version 20210617
  * @copyright danwha
  * @language node.js
  */
 
- /**
-  * @requires crypto
-  */
+ /** @requires crypto */
 const crypto = require('crypto');
 
-/** 
-  * @constant
-  * @type {JSON}
-  * @default
-  */
+const YES = true;
+const NO = false;
+
 const ruleStruct = {
   typeYear4 : { "type":"Y", "length":4, "format":"n"},
   typeYear2 : { "type":"y", "length":2, "format":"n"},
@@ -34,8 +30,7 @@ const ruleStruct = {
   shortMonths : ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   shortWeeks  : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
 
-  // added 20210329
-  longEnabled : false, // if true, shortMonths, shortWeeks are disabled.
+  longEnabled : NO, // if YES, shortMonths, shortWeeks are disabled.
   longMonths  : ['January','February','March','April','May','June','July','August','September','October','November','December'],
   longWeeks   : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 }
@@ -68,80 +63,35 @@ module.exports = class MaskPassword {
     this.structString += `${fixToken}[${fix.length}:${fix.format}]`
   } // #pushFix
 
-  /** @constant {JSON} */
   static get fullYear()     {return ruleStruct.typeYear4}
-  /** @constant {JSON} */
   static get shortYear()    {return ruleStruct.typeYear2}
-  /** @constant {JSON} */
   static get namedMonth()   {return ruleStruct.typeMonth3}
-  /** @constant {JSON} */
   static get numericMonth() {return ruleStruct.typeMonth2}
-  /** @constant {JSON} */
   static get weekday()      {return ruleStruct.typeWeek}
-  /** @constant {JSON} */
   static get day()          {return ruleStruct.typeDate}
-  /** @constant {JSON} */
   static get hour()         {return ruleStruct.typeHour}
-  /** @constant {JSON} */
   static get minute()       {return ruleStruct.typeMinute}
-  
-  /** @deprecated 20210609   */
-  static setRegularExpression(reg){regExp = reg}
-  /** @deprecated 20210609   */
-  static getRegularExpression(){return regExp}
 
-  /** new 20210609
-   * @description get/set RegExp(Regular Expression)
-   * @return      {RegExp}
-   * @default     /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
-   */
-   static regularExpression(reg = undefined){
-    if(reg == undefined)  return regExp
-    regExp = reg
-  }
+  static get regularExpression(){return regExp}
+  static set regularExpression(reg){regExp = reg}
 
-  /** @deprecated 20210609   */
-  static setLocale(hours){localeTimes = hours}
-  /** @deprecated 20210609   */
-  static getLocale(){return localeTimes}
-
-  /** new 20210609
-   * @description get/set locale
-   * @param       {uint}  hours
-   * @default     0
-   */
-   static locale(hours = undefined){
-    if(hours == undefined) return localeTimes
-    localeTimes = hours
-  }
-
-  /** @deprecated 20210609 : hiding(to inner method) in the future  */
-  static setSymbols(symbols){ return this.#setSymbols(symbols)}
-  /** @deprecated 20210609   */
-  static getSymbols(){        return ruleStruct.codeDates.concat(ruleStruct.codeString).join('')}
+  static get locale(){return localeTimes}
+  static set locale(hours){localeTimes = hours}
 
   static #setSymbols = symbols => {
     let _temp = []
     let $temp = ruleStruct.codeDates.concat(ruleStruct.codeString)
     for(let index = 0; index < symbols.length; index++){
       let char = symbols[index]
-      if(_temp.includes(char)) return {
-        result : false,
-        letter : char,
-        index  : index
-      }
-      if($temp.includes(char)) return {
-        result : false,
-        letter : char,
-        index  : index
-      }
+      if(_temp.includes(char) || $temp.includes(char)) return {result : NO, letter : char,  index  : index}
+
       _temp.push(char)
       $temp[index] = char
     } // for
 
     for(let index = 0; index < symbols.length; index++){
       let char = symbols[index]
-      if(index < 8)       ruleStruct.codeDates[index] = char
+           if(index <  8) ruleStruct.codeDates[index] = char
       else if(index == 8) ruleStruct.codeString = char
       switch(index){
         case 0: ruleStruct.typeYear4.type = char;   break;
@@ -156,67 +106,27 @@ module.exports = class MaskPassword {
       }
     } // for
 
-    return {
-      result : true,
-      letter : '',
-      index  : ''
-    }
-  } // setSymbols
+    return {result : YES, letter : '', index  : ''}
+  } // #setSymbols
 
-  /** new 20210609
-   * @description get/set mnemonic symbols
-   * @param       {string}  symbols
-   * @default     YyMmwdhIs
-   * @return      {string}
-   * @return      {JSON}
-  */
-  static symbols(symbols = undefined){
-    if(symbols == undefined)
-      return ruleStruct.codeDates.concat(ruleStruct.codeString).join('')
+  static get symbols(){return ruleStruct.codeDates.concat(ruleStruct.codeString).join('')}
+  static set symbols(symbols){this.#setSymbols(symbols)}
 
-    this.#setSymbols(symbols)
-  }
+  static get enableLongNames(){return ruleStruct.longEnabled}
+  static set enableLongNames(enable){ruleStruct.longEnabled = enable}
 
-  /**
-   * @description name mode change
-   * @param {bool} enable 
-   * @returns {bool} enabled/disabled(default)
-   */
-  static enableLongNames(enable = undefined){
-    if(enable == undefined) return ruleStruct.longEnabled
-    ruleStruct.longEnabled = enable
-  }
-  /**
-   * @description set month name
-   * @param {string[]} names 12 month names
-   * @returns {bool} success/failure
-   * @returns {string[]} 12 month names
-   */
-  static monthNames(names = undefined){
-    if(names == undefined) return ruleStruct.longMonths
-    if(names.length != 12) return false
-    if(names.some(m => m == '')) return false
+  static get monthNames(){return ruleStruct.longMonths}
+  static set monthNames(names){
+    if(names.length != 12 || names.some(m => m == '')) return
     ruleStruct.longMonths = names
-    return true
-  }
-  /**
-   * @description set weekday name
-   * @param {string[]} names 7 day names
-   * @returns {bool} success/failure
-   * @returns {string[]} 7 day names
-   */
-  static weekNames(names = undefined){
-    if(names == undefined) return ruleStruct.longWeeks
-    if(names.length != 7) return false
-    if(names.some(m => m == '')) return false
-    ruleStruct.longWeeks = names
-    return true
   }
 
-  /**
-   * @description   rule syntax check
-   * @returns       {JSON}
-   */
+  static get weekNames(){return ruleStruct.longWeeks}
+  static set weekNames(names){
+    if(names.length != 7 || names.some(m => m == '')) return
+    ruleStruct.longWeeks = names
+  }
+
   isValid = () => {
     var dateRule = 0
     var fixStrRule = 0
@@ -227,73 +137,32 @@ module.exports = class MaskPassword {
       if(ruleStruct.codeDates.includes(type)) dateRule++
       if(ruleStruct.codeString.includes(type)){
         fixStrRule++
-        if(item.format == ''){
-          return {result:false, source: item.format, error:'no string'}
-        }else{
-          if(item.format.length > 100){
-            return {result:false, source: item.format, error:'too long'}
-          }else if(! regExp.test(item.format)){
-            return {result:false, source: item.format, error:'disallowed characters'}
-          }else{
-            fixStrings += item.format
-          }
+        if(item.format == '')                 return {result:NO, source: item.format, error:'no string'}
+        else{
+               if(item.format.length > 100)   return {result:NO, source: item.format, error:'too long'}
+          else if(! regExp.test(item.format)) return {result:NO, source: item.format, error:'disallowed characters'}
+          else                                fixStrings += item.format
         } // if
       } // if
-    }
+    } // for
 
-    if(fixStrings.length < 6) return {
-      result  : false,
-      source  : '',
-      error   : 'The fixed string is short'
-    }
-
-    if(dateRule>0 && fixStrRule>0) return {
-      result  : true,
-      source  : '',
-      error   : ''
-    }
-
-    return {
-      result  : false,
-      source  : '',
-      error   : 'Requires datetime type and fixed string'
-    }
+    if(fixStrings.length < 6)       return {result  : NO,   source : '', error : 'The fixed string is short'}
+    if(dateRule>0 && fixStrRule>0)  return {result  : YES,  source : '', error : ''}
+    
+    return {result  : NO, source  : '', error   : 'Requires datetime type and fixed string'}
   } // isValid()
 
-  /**
-   * @description     compare
-   * @param           {string}    source  password statement
-   * @param           {int}       locale(optional)
-   * @returns         {JSON}
-   */
-  compare = (password, locale = undefined) => {
-    return compareRule(this.struct, password, locale)
-  } // compare
+  compare = (password, locale = undefined) => compareRule(this.struct, password, locale)
+  compareRule = (rule, source, locale = undefined) => compareRule(rule, source, locale)
 
-  /**
-   * @description     compare
-   * @param           {JSON[]}    rules   rule structure
-   * @param           {string}    source  password statement
-   * @param           {int}       locale(optional)
-   * @returns         {JSON}
-   */
-  compareRule = (rule, source, locale = undefined) => {
-    return compareRule(rule, source, locale)
-  } // compareRule
-
-  /**
-   * @description encryption
-   * @returns     {JSON[]}
-   */
   encryption = (locale = undefined) => {
-    let result = {}
     let temp = {
       string      : [],
       struct      : [],
       stringJoins : '',
       rules       : [],
       rulesJoins  : '',
-      secreatKey  : '',
+      secretKey   : '',
     }
 
     this.struct.forEach(item => {
@@ -317,29 +186,20 @@ module.exports = class MaskPassword {
       }
     }) // forEach
 
-    let buffer = Buffer.from(temp.struct.join(','), 'utf-8')
-    result.struct = buffer.toString('hex')
     temp.stringJoins = temp.string.join('')
     var stringBase64 = Buffer.from(temp.stringJoins).toString('base64')
     if(stringBase64.length < 32 ) stringBase64 += '\x00'.repeat(32)
-    let string32Bytes = stringBase64.substr(0,32)
-
-    temp.secreatKey = string32Bytes
+    temp.secretKey = stringBase64.substr(0,32) // string32Bytes
     temp.rulesJoins = temp.rules.join('')
-    let en = encrypt(temp.rulesJoins, temp.secreatKey)
-    result.iv = en.iv
-    result.content = en.content
 
-    return result
+    let en = encrypt(temp.rulesJoins, temp.secretKey)
+    return {
+      struct  : Buffer.from(temp.struct.join(','), 'utf-8').toString('hex'),
+      iv      : en.iv,
+      content : en.content
+    }
   } // encryption
 
-  /**
-   * @description decryption
-   * @param       {JSON[]}  encrypt
-   * @param       {string}  password
-   * @param       {int}     locale(optional)
-   * @returns     {string}
-   */
   decryption = (encrypt, password, locale = undefined) => {
     let structString = Buffer.from(encrypt.struct, 'hex').toString('utf-8')
     let struct = structString.split(',')
@@ -359,22 +219,16 @@ module.exports = class MaskPassword {
     // make secreat key
     var stringBase64 = Buffer.from(fixedString).toString('base64')
     if(stringBase64.length < 32 ) stringBase64 += '\x00'.repeat(32)
-    let secreatKey = stringBase64.substr(0,32)
+    let secretKey = stringBase64.substr(0,32)
 
     // decrypt
-    let decrypted = decrypt(encrypt, secreatKey)
-    let decryptedJson = str2json(decrypted)
-    if(decryptedJson.length == 0) return false;
-    let compare = this.compareRule(decryptedJson, password, locale)
-    return compare
+    let decryptedJson = str2json(decrypt(encrypt, secretKey))
+    if(decryptedJson.length == 0) return NO;
+
+    return this.compareRule(decryptedJson, password, locale)
   } // decryption
 } // class
 
-/**
- * @description String to JSON
- * @param       {String} str
- * @returns     {JSON[]}
- */
 str2json = str => {
   var index = 0
   let len = str.length
@@ -396,10 +250,12 @@ str2json = str => {
         let l = z.substr(2,n-2)
         let s = z.substr(n+1, l)
         index += (n + 2 + l*1)
-        let fix = JSON.parse(JSON.stringify(ruleStruct.typeFix));
-        fix.format = s
-        fix.length = l*1
-        json.push(fix)
+
+        json.push({
+          ...JSON.parse(JSON.stringify(ruleStruct.typeFix)),
+          format  : s,
+          length  : l * 1
+        })
         break
       default: // fail
         return []
@@ -409,23 +265,12 @@ str2json = str => {
   return json
 } // str2json
 
+/** @thanks https://attacomsian.com/blog/nodejs-encrypt-decrypt-data */
+// aes-128-ctr, aes-192-ctr, aes-256-ctr
+const algorithm = 'aes-256-ctr';
+const SecretKey = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3'; // 32 bytes : 256 bits
+const iv = crypto.randomBytes(16);
 
-
-/**
- * @constant
- * @thanks https://attacomsian.com/blog/nodejs-encrypt-decrypt-data
- */
-
- // aes-128-ctr, aes-192-ctr, aes-256-ctr
- const algorithm = 'aes-256-ctr';
- const SecretKey = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3'; // 32 bytes : 256 bits
- const iv = crypto.randomBytes(16);
- 
-/**
- * @description encrypt
- * @param {string} text
- * @returns {JSON}
- */
 const encrypt = (text, secretKey = SecretKey) => {
   const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
   const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
@@ -435,11 +280,6 @@ const encrypt = (text, secretKey = SecretKey) => {
   }
 }
 
-/**
- * @description decrypt
- * @param {JSON} hash
- * @returns {string}
- */
 const decrypt = (hash, secretKey = SecretKey) => {
   const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.iv, 'hex'))
   const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()])
@@ -479,13 +319,7 @@ const getNow = (locale = undefined) => {
     minute  : makeZeroString(day.getUTCMinutes()),
   }
 }
-/**
- * @description compare
- * @param       {JSON[]}    rules   rule structure
- * @param       {string}    source  password statement
- * @param       {int}       locale(optional)
- * @returns     {JSON}
- */
+
 const compareRule = (rule, source, locale = undefined) => {
   const now = getNow(locale)
   var index = 0
@@ -515,8 +349,6 @@ const compareRule = (rule, source, locale = undefined) => {
 
   let goals = []
   $rule.forEach(item => goals.push(item))
-  let goalsJoined = goals.join('')
-  let match = source == goalsJoined
 
-  return match
+  return source == goals.join('')
 } // compareRule
