@@ -1,4 +1,6 @@
-# 20210609(v1.2.0)
+# 20210617(v1.2.1)
+  bug fixed
+
   deprecated
   ```javascript
   static setRegularExpression(reg)

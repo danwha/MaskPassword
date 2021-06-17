@@ -51,26 +51,14 @@
       or
     const MaskPassword = require('./maskPassword')
     ```
-  * 0-2. regular expression(20210609, v1.2.0)
+  * 0-2. class properties(20210617, v1.2.1)
     ```javascript
-    MaskPassword.regularExpression(<reg>)
-    MaskPassword.regularExpression()
-    ```
-  * 0-3. locale(20210609, v1.2.0)
-    ```javascript
-    MaskPassword.locale(<hours>)
-    MaskPassword.locale()
-    ```
-  * 0-4. long names
-    ```javascript
-    MaskPassword.enableLongNames(<bool>)
-    MaskPassword.enableLongNames()
-
-    MaskPassword.monthNames(<strings>)
-    MaskPassword.monthNames()
-
-    MaskPassword.weekNames(<strings>)
-    MaskPassword.weekNames()
+    MaskPassword.regularExpression
+    MaskPassword.locale
+    MaskPassword.symbols
+    MaskPassword.enableLongNames
+    MaskPassword.monthNames
+    MaskPassword.weekNames
     ```
 
   1. creation
@@ -102,6 +90,6 @@
 
 ## See [CHANGED.md](https://github.com/danwha/MaskPassword/blob/main/CHANGED.md) for more.
 
-## If this has helped
-  ### I think I can do better if I eat chicken.
+## I don't have money to buy chicken.
+  ### ...
   > ETH Wallet : 0x03AA0D76BE8f547244c5A7410674f400142305b0

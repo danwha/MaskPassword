@@ -1,0 +1,12 @@
+https://heropy.blog/2019/01/31/node-js-npm-module-publish/  <==
+https://docs.npmjs.com/cli/v7/commands/npm-unpublish
+
+https://kdydesign.github.io/2020/08/28/npm-tutorial/
+https://www.daleseo.com/js-npm-publish/
+
+npmjs.com
+  danwha/L=1, danwha@h.n
+
+npm publish
+
+https://heropy.blog/2017/09/30/markdown/
