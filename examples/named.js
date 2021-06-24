@@ -17,7 +17,7 @@ MaskPassword.locale = 9
 const manager = new MaskPassword(rule)
 const encrypt = manager.encryption()
 
-for(let m = 1; m <= 12; m++){
+for(let m = 0; m < 12; m++){
   for(let w = 0; w < 7; w++){
     const password = `Summer${months[m]}Winter${weeks[w]}`
     const decrypt = manager.decryption(encrypt, password)
