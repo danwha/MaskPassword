@@ -30,15 +30,14 @@ samples.map(element => {
 const db = new sqlite3.Database(':memory:')
 
 db.serialize(()=> {
-  db.run('CREATE TABLE SecureTable (identy TEXT, password TEXT, personal INTEGER, secret TEXT)')
+  db.run('CREATE TABLE SecureTable (identy TEXT, password TEXT, personal INTEGER)')
 
   var stmt = db.prepare('INSERT INTO SecureTable VALUES (?,?,?,?)');
   for (let i = 0; i < samples.length; i++){
     stmt.run(
         samples[i].id,
         samples[i].encryptString,
-        samples[i].personal,
-        samples[i].secret,
+        samples[i].personal
       )
   }
   stmt.finalize()
@@ -56,7 +55,7 @@ db.serialize(()=> {
         }
   
         passwords.forEach(password => {
-          const match = verifier.decryption(encrypt, password, row.personal, row.secret)
+          const match = verifier.decryption(encrypt, password, row.personal)
           const report = match ? `\x1b[1m\x1b[91mYES\x1b[0m` : `\x1b[0mNO\x1b[0m`
           console.log(__line, `${row.identy} | ${row.personal} : ${password} -> ${report}`)
         }) // forEach  
