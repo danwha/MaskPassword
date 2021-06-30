@@ -20,7 +20,6 @@
   1. Contains custom strings.
   2. It includes the year, month, day, week, and time set by the user.
   3. User can change the order.
-  4. If necessary, additional encryption can be added.
 
 ## example
   1. 'Sunrise in the east.'
