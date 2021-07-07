@@ -32,7 +32,7 @@ const db = new sqlite3.Database(':memory:')
 db.serialize(()=> {
   db.run('CREATE TABLE SecureTable (identy TEXT, password TEXT, personal INTEGER)')
 
-  var stmt = db.prepare('INSERT INTO SecureTable VALUES (?,?,?,?)');
+  var stmt = db.prepare('INSERT INTO SecureTable VALUES (?,?,?)');
   for (let i = 0; i < samples.length; i++){
     stmt.run(
         samples[i].id,
