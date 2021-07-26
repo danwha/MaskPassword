@@ -27,7 +27,7 @@ Object.defineProperty(global, '__line', {
   },
 });
 right = (value, size) => {
-  let s = '0' + value.toString();
+  let s = '0'.repeat(size) + value.toString();
   let r = s.substr(s.length - size, size);
   return r;
 }

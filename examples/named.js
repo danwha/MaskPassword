@@ -1,6 +1,6 @@
 require('./utilities')
 
-const MaskPassword = require('../dist/maskPassword')
+const MaskPassword = require('maskPassword')
 
 const rule = [
   'Summer',
@@ -24,4 +24,3 @@ for(let m = 0; m < 12; m++){
     if(decrypt) console.log(__line, password)
   }  
 }
-

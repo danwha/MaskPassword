@@ -25,4 +25,3 @@ for(let m = 0; m < 12; m++){
     if(decrypt) console.log(__line, password)
   }
 }
-

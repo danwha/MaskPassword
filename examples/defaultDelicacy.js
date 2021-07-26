@@ -17,5 +17,4 @@ for(let h = 0; h <= 23; h++){
     const decrypt = manager.decryption(encrypt, password)
     if(decrypt) console.log(__line, password)
   }
-}  
-
+}
