@@ -1,8 +1,7 @@
 /**
  * @module MaskPassword
  * 
- * @author danwha <danwha@hanmail.net>
- * @version 20210617
+ * @version 20210725
  * @copyright danwha
  * @language node.js
  */
@@ -38,7 +37,7 @@ const ruleStruct = {
 var regExp = /^[가-힣A-Za-z0-9-!:^_'?,.=\s+]{1,200}$/
 var localeTimes = 0
 
-module.exports = class MaskPassword {
+class MaskPassword {
   constructor(rule = undefined){
     this.struct = []
     this.structString = ''
@@ -229,7 +228,7 @@ module.exports = class MaskPassword {
   } // decryption
 } // class
 
-str2json = str => {
+const str2json = str => {
   var index = 0
   let len = str.length
   let json = []
@@ -322,7 +321,6 @@ const getNow = (locale = undefined) => {
 
 const compareRule = (rule, source, locale = undefined) => {
   const now = getNow(locale)
-  var index = 0
   let $rule = []
   rule.forEach(item => {
     var $goal
@@ -337,11 +335,8 @@ const compareRule = (rule, source, locale = undefined) => {
         case ruleStruct.typeHour.type:  $goal = now.hour;    break
         case ruleStruct.typeMinute.type:$goal = now.minute;  break
       }
-      index += item.length
     }else if(item.type == ruleStruct.typeFix.type){
-      let length = item.length
       $goal = item.format
-      index += length
     } // if
 
     $rule.push($goal)
@@ -352,3 +347,8 @@ const compareRule = (rule, source, locale = undefined) => {
 
   return source == goals.join('')
 } // compareRule
+
+// node.js
+module.exports = MaskPassword
+// react.js
+//export default MaskPassword
