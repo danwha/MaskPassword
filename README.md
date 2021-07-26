@@ -45,12 +45,16 @@
 ## usage
   0. preparations
   * 0-1. require
-    ```javascript
+    ```javascript(node.js commonJS)
     const MaskPassword = require('maskpassword')
-      or
     const MaskPassword = require('./maskPassword')
     ```
-  * 0-2. class properties(20210617, v1.2.1)
+
+    ```javascript(react.js ES6)
+    import MaskPassword from './reactMaskPassword'
+    ```
+
+  * 0-2. class properties
     ```javascript
     MaskPassword.regularExpression
     MaskPassword.locale
