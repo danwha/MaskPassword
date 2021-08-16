@@ -23,7 +23,7 @@ const passwords = [
 
 samples.map(element => {
   const manager = new MaskPassword(element.rule)
-  const encrypt = manager.encryption({secret:element.secret})
+  const encrypt = manager.encryption()
   element.encryptString = Object.values(encrypt).join('|')
 })
 
