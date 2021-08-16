@@ -1,25 +1,6 @@
 # Masked Password
 
-## why - Many services require the following:
-  1. Don't use passwords that are easy to remember.
-  2. The length of the password is increasing.
-  3. Mix letters, numbers and symbols.
-  4. Require periodic changes.
-  5. The demanding rules get more complicated.
-
-## as results
-  1. It's hard to remember.
-  2. Despite its complexity, password leaks are common.
-  3. Complex rules don't prevent leaks, but they are good for users to forget.
-
-## suggestion
-  1. It has as set format that is easy to remember.
-  2. It has to change itself.
-
-## then
-  1. Contains custom strings.
-  2. It includes the year, month, day, week, and time set by the user.
-  3. User can change the order.
+## Build a flexible password based on datetime .
 
 ## example
   1. 'Sunrise in the east.'
@@ -28,13 +9,15 @@
   4. 'hot summer has come.'
 
   If now is June 2021, the correct password is
+
     'Sunrise in the east.2106hot summer has come.'.
 
-  If now is October 2022, the correct password is 'Sunrise in the east.2210hot summer has come.'.
+  If now is October 2022, the correct password is
 
-## install & require
-  1. npm i maskpassword
-  2. const MaskPassword = require('maskpassword')
+    'Sunrise in the east.2210hot summer has come.'.
+
+## install  
+    npm i maskpassword
 
 ## npmjs
   https://www.npmjs.com/package/maskpassword
@@ -45,13 +28,10 @@
 ## usage
   0. preparations
   * 0-1. require
-    ```javascript(node.js commonJS)
+    ```javascript
     const MaskPassword = require('maskpassword')
-    const MaskPassword = require('./maskPassword')
-    ```
-
-    ```javascript(react.js ES6)
-    import MaskPassword from './reactMaskPassword'
+      or
+    import MaskPassword from 'maskpassword'
     ```
 
   * 0-2. class properties
@@ -93,6 +73,5 @@
 
 ## See [CHANGED.md](https://github.com/danwha/MaskPassword/blob/main/CHANGED.md) for more.
 
-## I don't have money to buy chicken.
-  ### ...
+### Thank you for your donation. 
   > ETH Wallet : 0x03AA0D76BE8f547244c5A7410674f400142305b0

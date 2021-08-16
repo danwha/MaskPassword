@@ -1,3 +1,2 @@
-# 20210726(v1.2.2)
-  new
-    maskPasswordForReact.js - ES6
+# 20210816(v1.2.3)
+  support commonJS and ES6

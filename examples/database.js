@@ -1,7 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 
-//const MaskPassword = require('maskpassword')      // installed with npm
-const MaskPassword = require('../dist/maskPassword')
+//import MaskPassword from 'maskPassword'
+const MaskPassword = require('maskPassword')
+//const MaskPassword = require('../dist/maskPassword')
 
 require('./utilities')
 
