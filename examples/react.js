@@ -1,6 +1,6 @@
 import React      from 'react';
 
-import MaskPassword from './reactMaskPassword'
+import MaskPassword from 'maskpassword'
 
 function App() {
   const testIdenty = 'testIdenty'
