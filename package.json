@@ -1,0 +1,31 @@
+{
+  "name": "maskpassword",
+  "version": "1.2.3",
+  "description": "create a better password with this Maskpassword",
+  "main": "./dist/maskPassword.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danwha/MaskPassword.git"
+  },
+  "keywords": [
+    "maskpassword",
+    "hashedpassword",
+    "encryptpassword"
+  ],
+  "author": "danwha",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danwha/MaskPassword/issues"
+  },
+  "homepage": "https://github.com/danwha/MaskPassword#readme",
+  "dependencies": {
+    "ava": "^3.15.0",
+    "sqlite3": "^5.0.2"
+  }
+}
