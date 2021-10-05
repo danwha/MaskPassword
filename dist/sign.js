@@ -8,8 +8,9 @@ const ruleStruct = require("./ruleStruct")
 class Sign {
     constructor() {
         this.algorithm = 'aes-256-ctr'; 
-        this.secretKey = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3'
+        this.secretKey = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3'; 
         this.iv = crypto.randomBytes(16); 
+        this.localeTimes = 0; 
     }
 
     encrypt(text, secretKey = this.secretKey){
@@ -36,7 +37,7 @@ class Sign {
     getNow (locale = undefined) {
         const dayUTC = new Date();
         const dayUTCUnixtime = dayUTC.getTime() / 1000
-        const dayKrUnixtime = dayUTCUnixtime + (locale == undefined ? localeTimes * 3600 : locale * 3600)
+        const dayKrUnixtime = dayUTCUnixtime + (locale == undefined ? this.localeTimes * 3600 : locale * 3600)
         const day = new Date(dayKrUnixtime * 1000)
       
         return {
