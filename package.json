@@ -7,8 +7,15 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pretest": "semistandard --fix",
+    "test": "pwd & ava ./test/*.js", 
+    "precoveragehtml": "npm run coverage",
+    "coveragehtml": "nyc report -r html", 
+    "coverage": "nyc npm test",
+    "watch": "watch 'npm run coveragehtml' test lib",
+    "clean": "rm -rf coverage/ .nyc_output/"
   },
+
   "repository": {
     "type": "git",
     "url": "git+https://github.com/danwha/MaskPassword.git"
