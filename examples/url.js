@@ -5,13 +5,24 @@ require('./utilities')
 
 const MaskPassword = require('../dist/maskPassword')
   
-app.listen(8080,async () => console.log(__line, 'started...'))
-app.get('/', async (request, response, next) => response.sendStatus(200))
+app.listen(8080, (next) => {
+  console.log('started...')
+  next
+})
+
+
+
+app.get('/', async (req, res, next) => {
+  res.sendStatus(200); 
+  return next()
+})
 
 const manager = new MaskPassword([
   'The object is the void.',
   MaskPassword.day,
 ])
+
+
 let encrypt = manager.encryption()
 
 testapp = (request, response, next) => {
@@ -19,4 +30,6 @@ testapp = (request, response, next) => {
   let decrypt = manager.decryption(encrypt, key)
   response.send(decrypt ? 'Access ok' : 'access denied')
 }
+
+
 app.get('/test/:key',testapp)

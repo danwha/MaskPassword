@@ -1,6 +1,6 @@
 require('./utilities')
 
-const MaskPassword = require('maskPassword')
+const MaskPassword = require('../dist/maskPassword')
 
 const rule = [
   'Summer',
